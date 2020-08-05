@@ -1,6 +1,14 @@
-## xc-ext-io
 
 Extension for XC=BASIC that handles IO routines. Compatible with XC=BASIC v2.2 or higher. [Click here to learn about XC=BASIC](https://xc-basic.net).
+
+> **NOTE**\
+> This extension is not finished.
+
+To do:
+
+- Add error checking with READST.
+- Add `io_WriteByte`.
+- Add `io_WriteBytes`.
 
 ## Usage
 

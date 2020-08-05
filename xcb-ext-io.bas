@@ -2,6 +2,7 @@ rem ******************************
 rem * File IO extension
 rem * by Thraka
 rem * namespace: io_
+rem * version: 1.0
 rem ******************************
 
 const KERNAL_SETLFS = $FFBA
