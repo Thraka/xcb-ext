@@ -16,15 +16,15 @@ That's it, you can now use all the procedures, functions, and symbols defined by
 
 - **Read blocks free from the disk BAM**
   
-  [examples\\block-count.bas](examples\block-count.bas)
+  [examples\\block-count.bas](examples/block-count.bas)
 
 - **Print string to a file**
   
-  [examples\\print-to-file.bas](examples\print-to-file.bas)
+  [examples\\print-to-file.bas](examples/print-to-file.bas)
 
 - **Print string to printer**
   
-  [examples\\print-to-printer.bas](examples\print-to-printer.bas)
+  [examples\\print-to-printer.bas](examples/print-to-printer.bas)
 
 ## Constants
 
@@ -42,6 +42,19 @@ const KERNAL_LOAD   = $FFD5
 ```
 
 ## Commands
+
+| Command                             | Summary                                                 |
+|-------------------------------------|---------------------------------------------------------|
+| [`io_Open`](#io_Open)               | Opens a logical file.                                   |
+| [`io_OpenName`](#io_OpenName)       | Opens a logical file and file name on the device.       |
+| [`io_Close`](#io_Close)             | Closes a logical file.                                  |
+| [`io_ReadByte`](#io_ReadByte)       | Reads a single byte from a logical file.                |
+| [`io_ReadBytes`](#io_ReadBytes)     | Reads multiple bytes from a logical file into a buffer. |
+| [`io_WriteString`](#io_WriteString) | Writes a string to the logical file that has been.      |
+
+---
+
+### io_Open
 
 **`io_Open(logicalFile!, device!, channel!)`**
 
@@ -61,6 +74,8 @@ Doesn't open a specific file.
 Calls the kernal routines `SETNAM`, `SETLFS`, and `OPEN`.
 
 ---
+
+### io_OpenName
 
 **`io_OpenName(logicalFile!, device!, channel!, filename$)`**
 
@@ -82,6 +97,8 @@ Calls the kernal routines SETNAM, SETLFS, and OPEN.
 
 ---
 
+### io_Close
+
 **`io_Close(logicalFile!)`**
 
 #### Arguments
@@ -98,6 +115,8 @@ io_Open or io_OpenName.
 Calls the kernal routine CLOSE.
 
 ---
+
+### io_ReadByte
 
 **`io_ReadByte!(logicalFile!)`**
 
@@ -119,6 +138,8 @@ with either io_Open or io_OpenName.
 Calls the kernal routines CHKIN, CHRIN, and CLRCHN.
 
 ---
+
+### io_ReadBytes
 
 **`io_ReadBytes(logicalFile!, bufferAddress, byteCount!)`**
 
@@ -143,6 +164,8 @@ Calls the kernal routines CHKIN, CHRIN, and CLRCHN.
 
 ---
 
+### io_WriteString
+
 **`io_WriteString(logicalFile!, text$)`**
 
 #### Arguments
@@ -154,7 +177,7 @@ Calls the kernal routines CHKIN, CHRIN, and CLRCHN.
 
 #### Summary
 
-Writes the string prived to the logical file that has been
+Writes a string to the logical file that has been
 opened with either io_Open or io_OpenName.
 
 Calls the kernal routines CHKOUT, CHROUT, and CLRCHN.
