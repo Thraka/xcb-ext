@@ -1,14 +1,16 @@
 
-Extension for XC=BASIC that handles IO routines. Compatible with XC=BASIC v2.2 or higher. [Click here to learn about XC=BASIC](https://xc-basic.net).
+Extension for XC=BASIC that handles I/O routines. Compatible with XC=BASIC v2.2 or higher. [Click here to learn about XC=BASIC](https://xc-basic.net).
+
+_**Version: 1.1**_
 
 > **NOTE**\
 > This extension is not finished.
 
 To do:
 
-- Add error checking with READST.
-- Add `io_WriteByte`.
-- Add `io_WriteBytes`.
+- [ ] Add error checking with READST.
+- [x] Add `io_WriteByte`.
+- [x] Add `io_WriteBytes`.
 
 ## Usage
 
@@ -58,6 +60,8 @@ const KERNAL_LOAD   = $FFD5
 | [`io_Close`](#io_Close)             | Closes a logical file.                                  |
 | [`io_ReadByte`](#io_ReadByte)       | Reads a single byte from a logical file.                |
 | [`io_ReadBytes`](#io_ReadBytes)     | Reads multiple bytes from a logical file into a buffer. |
+| [`io_WriteByte`](#io_WriteByte)     | Writes a single byte to a logical file.                 |
+| [`io_WriteBytes`](#io_WriteBytes)   | Writes multiple bytes from a buffer to a logical file.  |
 | [`io_WriteString`](#io_WriteString) | Writes a string to the logical file that has been.      |
 
 ---
@@ -169,6 +173,50 @@ Operates on a logical file that has been opened
 with either io_Open or io_OpenName.
 
 Calls the kernal routines CHKIN, CHRIN, and CLRCHN.
+
+---
+
+### io_WriteByte
+
+**`io_WriteByte(logicalFile!, byte!)`**
+
+#### Arguments
+
+| Argument       | Description            |
+|----------------|------------------------|
+| `logicalFile!` | Logical file number.   |
+| `byte!`        | The byte to write.   |
+
+#### Summary
+
+Writes the specified byte to a logical file that has been opened
+with either io_Open or io_OpenName.
+
+Calls the kernal routines CHKOUT, CHROUT, and CLRCHN.
+
+---
+
+### io_WriteBytes
+
+**`io_WriteBytes(logicalFile!, bufferAddress, byteCount!)`**
+
+#### Arguments
+
+| Argument        | Description                  |
+|-----------------|------------------------------|
+| `logicalFile!`  | Logical file number.         |
+| `bufferAddress` | The address of a byte array. |
+| `byteCount!`    | The count of bytes to write. |
+
+#### Summary
+
+Writes the total bytes specified by the byteCount!
+parameter to the logical file.
+
+The bufferAddress parameter is the address of the byte
+array to store.
+
+Calls the kernal routines CHKOUT, CHROUT, and CLRCHN.
 
 ---
 

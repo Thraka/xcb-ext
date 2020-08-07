@@ -2,7 +2,13 @@ rem ******************************
 rem * File IO extension
 rem * by Thraka
 rem * namespace: io_
-rem * version: 1.0
+rem * GitHub: https://github.com/Thraka/xcb-ext-io
+rem *
+rem * version: 1.1 Aug 6, 2020
+rem * - Added io_WriteByte and io_WriteBytes
+rem *
+rem * version: 1.0 Aug 4, 2020
+rem * - Initial release
 rem ******************************
 
 const KERNAL_SETLFS = $FFBA
@@ -108,14 +114,6 @@ proc io_Close(logicalFile!)
     "
 endproc
 
-'proc io_WriteByte(logicalFile!)
-'
-'endproc
-'
-'proc io_WriteBytes(logicalFile!)
-'
-'endproc
-'
 rem ******************************
 rem * Command:
 rem * io_ReadByte
@@ -181,6 +179,74 @@ proc io_ReadBytes(logicalFile!, bufferAddress, byteCount!)
     jsr _KERNAL_CHRIN
 .buff
     sta {self}.bufferAddress,Y
+    ;readst
+    iny
+    cpy {self}.byteCount
+    bne .start
+    jsr _KERNAL_CLRCHN
+    "
+endproc
+
+rem ******************************
+rem * Command:
+rem * io_WriteByte
+rem * 
+rem * Arguments:
+rem * logicalFile!  - Logical file number.
+rem * byte!         - The byte to write.
+rem * 
+rem * Summary:
+rem * Writes the specified byte to a logical file that has been opened
+rem * with either io_Open or io_OpenName.
+rem * 
+rem * Calls the kernal routines CHKOUT, CHROUT, and CLRCHN.
+rem ******************************
+
+proc io_WriteByte(logicalFile!, byte!)
+    asm "
+    ldx {self}.logicalFile
+    jsr _KERNAL_CHKOUT
+    ;readst
+    lda {self}.byte
+    jsr _KERNAL_CHROUT
+    ;readst
+    jsr _KERNAL_CLRCHN
+    "
+endproc
+
+rem ******************************
+rem * Command:
+rem * io_WriteBytes
+rem * 
+rem * Arguments:
+rem * logicalFile!  - Logical file number.
+rem * bufferAddress - The address of a byte array.
+rem * byteCount!    - The count of bytes to write.
+rem * 
+rem * Summary:
+rem * Writes the total bytes specified by the byteCount!
+rem * parameter to the logical file.
+rem * 
+rem * The bufferAddress parameter is the address of the byte
+rem * array to store.
+rem * 
+rem * Calls the kernal routines CHKOUT, CHROUT, and CLRCHN.
+rem ******************************
+
+proc io_WriteBytes(logicalFile!, bufferAddress, byteCount!)
+    asm "
+    ldx {self}.logicalFile
+    jsr _KERNAL_CHKOUT
+    ;readst
+    ldy #$00
+    lda {self}.bufferAddress
+    sta .buff+1
+    lda {self}.bufferAddress+1
+    sta .buff+2
+.start
+.buff
+    lda {self}.bufferAddress,Y
+    jsr _KERNAL_CHROUT
     ;readst
     iny
     cpy {self}.byteCount

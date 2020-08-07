@@ -5,7 +5,6 @@ include "xcb-ext-io.bas"
 io_OpenName 2, 8, 2, "$"
 
 dim bytes![4]
-let addr = @bytes!
 
 ' Get the first two bytes and ignore them (they are disk format identifiers for 1541)
 io_ReadBytes 2, @bytes!, 2
