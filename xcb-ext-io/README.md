@@ -1,5 +1,5 @@
 
-Extension for XC=BASIC that handles I/O routines. Compatible with XC=BASIC v2.2 or higher. [Click here to learn about XC=BASIC](https://xc-basic.net).
+Extension for [XC=BASIC](https://github.com/neilsf/XC-BASIC/) that handles I/O routines. Compatible with XC=BASIC v2.2 or higher. [Click here to learn about XC=BASIC](https://xc-basic.net).
 
 _**Version: 1.1**_
 
