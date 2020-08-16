@@ -21,6 +21,51 @@ const KERNAL_CLRCHN = $FFCC
 const KERNAL_CHRIN  = $FFCF
 const KERNAL_CHROUT = $FFD2
 const KERNAL_LOAD   = $FFD5
+const KERNAL_READST = $FE07
+
+proc io_PrintError
+    asm "
+    pha
+    jsr _KERNAL_CLRCHN
+    pla
+    cmp #$02
+    beq .error_file_open
+    cmp #$03
+    beq .error_file_not_open
+    cmp #$05
+    beq .error_device_not_ready
+    jmp .error_unknown
+.error_file_open
+    lda #<.string_error_file_already_open
+    pha
+    lda #>.string_error_file_already_open
+    pha
+    jmp RUNTIME_ERROR
+.error_file_not_open
+    lda #<.string_error_file_not_open
+    pha
+    lda #>.string_error_file_not_open
+    pha
+    jmp RUNTIME_ERROR
+.error_device_not_ready
+    lda #<.string_error_device_not_ready
+    pha
+    lda #>.string_error_device_not_ready
+    pha
+    jmp RUNTIME_ERROR
+.error_unknown
+    sta .string_error_unknown+13
+    lda #<.string_error_unknown
+    pha
+    lda #>.string_error_unknown
+    pha
+    jmp RUNTIME_ERROR
+.string_error_file_already_open     HEX 45 52 52 3A 20 46 49 4C 45 20 4F 50 45 4E 00
+.string_error_file_not_open         HEX 45 52 52 3A 20 46 49 4C 45 20 4E 4F 54 20 4F 50 45 4E 00
+.string_error_device_not_ready      HEX 45 52 52 3A 20 44 45 56 49 43 45 20 4D 49 53 53 49 4E 47 00
+.string_error_unknown               HEX 45 52 52 3A 20 55 4E 4B 4E 4F 57 4E 20 20 00
+    "
+endproc
 
 rem ******************************
 rem * Command:
@@ -47,6 +92,11 @@ proc io_Open(logicalFile!, device!, channel!)
     ldy {self}.channel
     jsr _KERNAL_SETLFS
     jsr _KERNAL_OPEN
+    bcs .error
+    jmp .end
+.error
+    jmp _Pio_PrintError
+.end
     "
 endproc
 
@@ -78,10 +128,12 @@ proc io_OpenName(logicalFile!, device!, channel!, filename$)
     ldx {self}.device
     ldy {self}.channel
     jsr _KERNAL_SETLFS
-    clc
     jsr _KERNAL_OPEN
-
-    ;bcs .error
+    bcs .error
+    jmp .end
+.error
+    jmp _Pio_PrintError
+.end
 ;.error
     ;investigate READST from kernal
     ;kernal print error
@@ -134,13 +186,25 @@ rem ******************************
 fun io_ReadByte!(logicalFile!)
     let result! = 0
     asm "
+    jsr _KERNAL_CLRCHN
     ldx {self}.logicalFile
     jsr _KERNAL_CHKIN
-    ;readst
+    bcs .error
     jsr _KERNAL_CHRIN
-    sta {self}.result
-    ;readst
+    ; - do readst 
+    ; - destroys A so that needs to be saved
+    ; - if A is 00 then all is good
+    ; - restore A 
+    tax
+    jsr _KERNAL_READST
+    cmp #$00
+    bne .error
+    stx {self}.result
     jsr _KERNAL_CLRCHN
+    jmp .end
+.error
+    jmp _Pio_PrintError
+.end
     "
     return result!
 endfun
