@@ -28,6 +28,10 @@ That's it, you can now use all the procedures, functions, and symbols defined by
   
   [examples\\block-count.bas](../examples/block-count.bas)
 
+- **Read disk name and id**
+  
+  [examples\\disk-header-id.bas](../examples/disk-header-id.bas)
+
 - **Print string to a file**
   
   [examples\\print-to-file.bas](../examples/print-to-file.bas)
@@ -35,6 +39,7 @@ That's it, you can now use all the procedures, functions, and symbols defined by
 - **Print string to printer**
   
   [examples\\print-to-printer.bas](../examples/print-to-printer.bas)
+
 
 ## Constants
 
