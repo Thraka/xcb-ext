@@ -1,0 +1,21 @@
+al C:ffd5 .kernal_load
+al C:ffcc .kernal_clrchn
+al C:ffc9 .kernal_chkout
+al C:ffcf .kernal_chrin
+
+al C:ffc3 .kernal_close
+al C:ffba .kernal_setlfs
+al C:ffbd .kernal_setnam
+al C:ffc6 .kernal_chkin
+al C:ffc0 .kernal_open
+
+al C:8018 .param_file_low
+al C:801a .param_file_len
+al C:8041 .error
+al C:8019 .param_file_high
+al C:801b .param_device
+al C:8018 .file_name
+al C:8000 .start
+al C:803b .close
+al C:8018 .device_number
+al C:8018 .sub_open

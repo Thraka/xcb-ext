@@ -1,16 +1,21 @@
 
 Welcome to my extensions for XC=BASIC. [Click here to learn about XC=BASIC](https://xc-basic.net).
 
-### Extensions
+### v3 Extentions
 
-- [I/O](xcb-ext-io)
+- [String helpers](v3/xcb-mod-string)
+- [Color constants](v3/xcb-mod-colors)
+
+### v2 Extensions
+
+- [I/O](v2/xcb-ext-io)
 
   Provides a lot of methods to interact with devices
 
-- [String helpers](xcb-ext-string)
+- [String helpers](v2/xcb-ext-string)
 
   String helpers such as concatenating multiple strings into a buffer.
 
-- [Error helpers](xcb-ext-error)
+- [Error helpers](v2/xcb-ext-error)
 
   - Methods to throw errors
