@@ -1,0 +1,90 @@
+REM ***********************************************************************************************************
+REM *    Menukeys.Bas   XC=BASIC Module  V3.X 
+REM *    
+REM *	  Simple MENU routine. 
+REM *
+REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan 2022        V1.00
+REM ***********************************************************************************************************
+'Include "strings.bas"
+'Include "colors.bas"
+
+CONST TRUE  = 255 : CONST FALSE = 0
+
+DECLARE SUB mnuInit(xLeft AS BYTE ,top AS BYTE , NormalColor as BYTE, HilightColor AS BYTE ) STATIC SHARED
+DECLARE SUB mnuAddItem(menuStr as STRING * 39, HilightLetter as STRING * 1 )  STATIC SHARED
+DECLARE SUB mnuAddItemRev(menuStr AS STRING  * 39, HilightLetter as STRING * 1 )  STATIC SHARED
+DECLARE FUNCTION mnuGetKey AS BYTE ()  STATIC SHARED
+DECLARE SUB mnuAddKey(key AS STRING * 1  )  STATIC SHARED
+
+DIM mLeft AS BYTE 
+DIM mNormalClr AS BYTE
+DIM mHilightClr AS BYTE
+DIM mKeys AS STRING * 23
+DIM mCurrrentRow AS BYTE
+
+
+REM ************* UN-REM to test **** and the include above *********
+'Include "colors.bas"
+'PRINT "{CLR}" 
+'call  mnuInit(14,10, clrWHITE, clrBLACK)
+'call mnuAddItem("change disk","c")
+'call mnuAddItem("format disk","f")
+'call mnuAddItem("check   disk","e")
+'call mnuAddItem("-------------","")
+'call mnuAddItem("exit program","x")
+
+'dim key as byte : key = mnuGetKey()
+'textat 0,20,"key pressed: " + chr$(key)
+'END
+REM *************************  Testing ******************************
+
+
+SUB mnuAddKey(key AS STRING * 1 )  STATIC SHARED
+	mKeys = mKeys + key
+END SUB
+
+SUB mnuInit(xLeft AS BYTE ,top AS BYTE , NormalColor as BYTE, HilightColor AS BYTE ) STATIC SHARED
+	mLeft = xleft
+	mKeys = ""
+	mNormalClr = NormalColor
+	mHilightClr = HilightColor
+	mCurrrentRow = Top
+	'POKE 646, NormalColor : REM - C64 only? - needed for mnuAddItemRev Method - TODO
+END SUB
+
+SUB mnuAddItem(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHARED
+	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow, menuStr, mNormalClr
+	IF LEN(HilightLetter) = 1 THEN
+		TEXTAT  mLeft + str_Instr(menuStr,HilightLetter) - 1, mCurrrentRow, HilightLetter, mHilightClr
+		mKeys = mKeys + HilightLetter
+	END IF
+	mCurrrentRow = mCurrrentRow + 1
+END SUB
+
+SUB mnuAddItemRev(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHARED
+	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow,  menuStr, mNormalClr
+	IF LEN(HilightLetter) = 1 THEN
+		LOCATE mLeft + str_Instr(menuStr,HilightLetter) - 1, mCurrrentRow : PRINT  "{REV_ON}" + HilightLetter + "{REV_OFF}" ; : REM '--- Same as TEXTAT except respects PET codes
+		mKeys = mKeys + HilightLetter
+	END IF
+	mCurrrentRow = mCurrrentRow + 1
+END SUB
+
+
+FUNCTION mnuGetKey AS BYTE ()  STATIC SHARED
+	DIM aa AS BYTE
+	
+mnuDoAgain:
+	aa = 0
+	DO
+		GET aa
+	LOOP UNTIL aa > 0
+	'POKE 54296,15 : POKE 54296,0 : rem make a click sound
+	'CALL scrn_DebugTextBtm(str$(aa))
+	IF str_Instr(mKeys, CHR$(aa)) = 0 THEN GOTO mnuDoAgain		
+	RETURN aa
+	
+END FUNCTION
+
+
+
