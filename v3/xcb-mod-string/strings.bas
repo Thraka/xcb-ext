@@ -1,13 +1,13 @@
 REM ***********************************************************************************************************
-REM *    strings.bas   XC=BASIC Module  V3.X 
+REM *    StrHelper.Bas   XC=BASIC Module  V3.X 
 REM *    
 REM *	  High level string routines. 
-REM *
-REM *
 REM *    Note:: This is not the fastest or cleanest code. As XC=BASIC supports inline ASM all these  
 REM *               methods could / should / maybe...  end up being rewriten.  BUT...  THIS DOES WORK JUST FINE!  ;) 
 REM *
-REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Dec 2021 - Jan 2022        V1.00
+REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Dec 2021 - Jan 2022        V1.01
+REM *   
+REM *   Feb-05-2022, Added str_CenterString function
 REM ***********************************************************************************************************
 DECLARE FUNCTION str_Strings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STATIC  SHARED 
 DECLARE FUNCTION str_Strings AS STRING * 96 (count AS BYTE, character AS BYTE) STATIC SHARED OVERLOAD
@@ -29,15 +29,15 @@ DECLARE FUNCTION str_EndsWith AS BYTE(searchme AS STRING * 96, findme AS STRING 
 DECLARE FUNCTION str_LTrim AS STRING * 96 (trimMe AS STRING * 96) STATIC SHARED
 DECLARE FUNCTION str_RTrim AS STRING * 96 (trimMe AS STRING * 96) STATIC SHARED
 DECLARE FUNCTION str_Replace as string * 96 (searchme as string * 96, findme as string * 96, ReplaceWithMe as string * 96) STATIC SHARED
+DECLARE FUNCTION str_CenterString AS STRING * 96 (xText AS STRING * 94, xWidth AS BYTE) STATIC SHARED
 REM ================================================================================================================
 
-'--- TODO
-'declare function str_Split as string* 96 (splitme as string * 96, splitchar as string * 6) STATIC SHARED
-'declare function str_Join as string* 96 (splitme as string * 96, splitchar as string * 6) STATIC SHARED
+CONST TRUE  = 255 : CONST FALSE = 0
 
-CONST TRUE  = 255
-CONST FALSE = 0
-
+FUNCTION str_CenterString AS STRING * 96 (xText AS STRING * 94, xWidth AS BYTE) STATIC SHARED
+	DIM pad AS BYTE : pad = (xWidth - LEN(xText)) / 2
+	RETURN (str_STRINGS(pad,32) + xText + str_STRINGS(pad,32))
+END FUNCTION
 
 REM =================================================================================================
 FUNCTION str_Replace AS STRING * 96 (searchme AS STRING * 96, findme AS STRING * 96, ReplaceWithMe AS STRING * 96) STATIC SHARED
@@ -61,8 +61,6 @@ FUNCTION str_Strings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STA
     RETURN str_Strings(count, ASC(character))
 END FUNCTION
 FUNCTION str_Strings AS STRING * 96 (count AS BYTE, character AS BYTE) STATIC SHARED OVERLOAD
-	'IF count < 1 THEN ERROR 14: REM ILLEGAL QUANTITY
-	'IF count > 96 THEN count = 96
 	POKE @str_Strings, count
 	MEMSET @str_Strings + 1, count, character
 END FUNCTION
@@ -124,7 +122,7 @@ FUNCTION str_Instr AS BYTE (startidx AS BYTE,searchme AS STRING * 96, findme AS 
 	IF lenFind > lenStr THEN RETURN FALSE
 
 	DIM idx AS BYTE FAST
-	FOR idx = start TO lenStr
+	FOR idx  = start TO lenStr
 
 		IF MID$(searchme,idx,lenFind) = findme THEN RETURN idx + 1
 		IF (lenFind + idx) >= lenStr THEN RETURN FALSE
