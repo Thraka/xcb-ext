@@ -21,12 +21,11 @@ DIM x$ AS STRING * 1 : DIM y$ AS STRING * 1
 DIM counter AS BYTE
 
 REM ========== TESTING =======================
-PRINT STR$(dskBlocksFree(8))
-PRINT dskDriveModel(8)
-PRINT dskStatus(8)
-PRINT dskStatusOK(8)
-
-END
+'PRINT STR$(dskBlocksFree(8))
+'PRINT dskDriveModel(8)
+'PRINT dskStatus(8)
+'PRINT dskStatusOK(8)
+'END
 REM ===========================================
 
 
@@ -49,7 +48,7 @@ FUNCTION dskDriveModelConst AS BYTE (driveNum AS BYTE) STATIC SHARED
 	RETURN ASC(x$)
 END FUNCTION 
 
-FUNCTION dskDriveModel AS STRING * 4 (driveNum AS BYTE) STATIC SHARED OVERLOAD
+FUNCTION dskDriveModel AS STRING * 4 (driveNum AS BYTE) STATIC SHARED
 	DIM tt AS INT : tt = dskDriveModelConst(driveNum)
 	IF tt = DRIVE_1581     THEN RETURN "1581"
 	IF tt = DRIVE_1571     THEN RETURN "1571"
