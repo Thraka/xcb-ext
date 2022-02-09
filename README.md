@@ -5,6 +5,8 @@ Welcome to my extensions for XC=BASIC. [Click here to learn about XC=BASIC](http
 
 - [String helpers](v3/xcb-mod-string)
 - [Color constants](v3/xcb-mod-colors)
+- [Menu routines](v3/xbc-mod-menus)
+- [Disk routines](v3/xbc-mod-disk)
 
 ### v2 Extensions
 
