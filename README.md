@@ -7,6 +7,8 @@ Welcome to my extensions for XC=BASIC. [Click here to learn about XC=BASIC](http
 - [Color constants](v3/xcb-mod-colors)
 - [Menu routines](v3/xbc-mod-menus)
 - [Disk routines](v3/xbc-mod-disk)
+- [Box drawing routines](v3/xbc-mod-box)
+
 
 ### v2 Extensions
 
