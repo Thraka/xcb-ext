@@ -55,7 +55,7 @@ END SUB
 SUB mnuAddItem(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHARED
 	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow, menuStr, mNormalClr
 	IF LEN(HilightLetter) = 1 THEN
-		TEXTAT  mLeft + str_Instr(menuStr,HilightLetter) - 1, mCurrrentRow, HilightLetter, mHilightClr
+		TEXTAT  mLeft + strInstr(menuStr,HilightLetter) - 1, mCurrrentRow, HilightLetter, mHilightClr
 		mKeys = mKeys + HilightLetter
 	END IF
 	mCurrrentRow = mCurrrentRow + 1
@@ -64,7 +64,7 @@ END SUB
 SUB mnuAddItemRev(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHARED
 	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow,  menuStr, mNormalClr
 	IF LEN(HilightLetter) = 1 THEN
-		LOCATE mLeft + str_Instr(menuStr,HilightLetter) - 1, mCurrrentRow : PRINT  "{REV_ON}" + HilightLetter + "{REV_OFF}" ; : REM '--- Same as TEXTAT except respects PET codes
+		LOCATE mLeft + strInstr(menuStr,HilightLetter) - 1, mCurrrentRow : PRINT  "{REV_ON}" + HilightLetter + "{REV_OFF}" ; : REM '--- Same as TEXTAT except respects PET codes
 		mKeys = mKeys + HilightLetter
 	END IF
 	mCurrrentRow = mCurrrentRow + 1
@@ -81,7 +81,7 @@ mnuDoAgain:
 	LOOP UNTIL aa > 0
 	'POKE 54296,15 : POKE 54296,0 : rem make a click sound
 	'CALL scrn_DebugTextBtm(str$(aa))
-	IF str_Instr(mKeys, CHR$(aa)) = 0 THEN GOTO mnuDoAgain		
+	IF strInstr(mKeys, CHR$(aa)) = 0 THEN GOTO mnuDoAgain		
 	RETURN aa
 	
 END FUNCTION
