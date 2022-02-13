@@ -25,7 +25,7 @@ DECLARE SUB hiLightMenuItem(Row2hiLight AS BYTE, oldItem AS BYTE) STATIC
 DIM mLeft AS BYTE  : DIM mTop AS BYTE
 DIM mColor AS BYTE
 DIM mCurrrentRow AS INT
-DIM mKeys AS STRING * 40
+DIM mKeys AS STRING * 25 : mKeys = ""
 DIM mMaxLength AS BYTE : mMaxLength = 0
 DIM mLastRow AS INT
 DIM mLastRowHilighted AS BYTE
