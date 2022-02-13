@@ -32,11 +32,10 @@ SUB mnuInit(xLeft AS BYTE ,top AS BYTE , NormalColor as BYTE, HilightColor AS BY
 	mNormalClr = NormalColor
 	mHilightClr = HilightColor
 	mCurrrentRow = Top
-	'POKE 646, NormalColor : REM - C64 only? - needed for mnuAddItemRev Method - TODO
 END SUB
 
 SUB mnuAddItem(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHARED
-	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow, menuStr, mNormalClr
+	TEXTAT mLeft, mCurrrentRow, menuStr, mNormalClr
 	IF LEN(HilightLetter) = 1 THEN
 		TEXTAT  mLeft + strInstr(menuStr,HilightLetter) - 1, mCurrrentRow, HilightLetter, mHilightClr
 		mKeys = mKeys + UCASE$(HilightLetter) + LCASE$(HilightLetter)
@@ -45,7 +44,7 @@ SUB mnuAddItem(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHA
 END SUB
 
 SUB mnuAddItemRev(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHARED
-	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow,  menuStr, mNormalClr
+	TEXTAT mLeft, mCurrrentRow,  menuStr, mNormalClr
 	IF LEN(HilightLetter) = 1 THEN
 		LOCATE mLeft + strInstr(menuStr,HilightLetter) - 1, mCurrrentRow : PRINT  "{REV_ON}" + HilightLetter + "{REV_OFF}" ; : REM '--- Same as TEXTAT except respects PET codes
 		mKeys = mKeys + UCASE$(HilightLetter) + LCASE$(HilightLetter)		
