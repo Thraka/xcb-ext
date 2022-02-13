@@ -19,28 +19,11 @@ DECLARE SUB mnuAddKey(key AS STRING * 1  )  STATIC SHARED
 DIM mLeft AS BYTE 
 DIM mNormalClr AS BYTE
 DIM mHilightClr AS BYTE
-DIM mKeys AS STRING * 23
+DIM mKeys AS STRING * 40
 DIM mCurrrentRow AS BYTE
 
-
-REM ************* UN-REM to test **** and the include above *********
-'Include "colors.bas"
-'PRINT "{CLR}" 
-'call  mnuInit(14,10, clrWHITE, clrBLACK)
-'call mnuAddItem("change disk","c")
-'call mnuAddItem("format disk","f")
-'call mnuAddItem("check   disk","e")
-'call mnuAddItem("-------------","")
-'call mnuAddItem("exit program","x")
-
-'dim key as byte : key = mnuGetKey()
-'textat 0,20,"key pressed: " + chr$(key)
-'END
-REM *************************  Testing ******************************
-
-
 SUB mnuAddKey(key AS STRING * 1 )  STATIC SHARED
-	mKeys = mKeys + key
+	mKeys = mKeys + UCASE$(key) + LCASE$(key)
 END SUB
 
 SUB mnuInit(xLeft AS BYTE ,top AS BYTE , NormalColor as BYTE, HilightColor AS BYTE ) STATIC SHARED
@@ -56,7 +39,7 @@ SUB mnuAddItem(menuStr as string * 39, HilightLetter as string * 1 )  STATIC SHA
 	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow, menuStr, mNormalClr
 	IF LEN(HilightLetter) = 1 THEN
 		TEXTAT  mLeft + strInstr(menuStr,HilightLetter) - 1, mCurrrentRow, HilightLetter, mHilightClr
-		mKeys = mKeys + HilightLetter
+		mKeys = mKeys + UCASE$(HilightLetter) + LCASE$(HilightLetter)
 	END IF
 	mCurrrentRow = mCurrrentRow + 1
 END SUB
@@ -65,7 +48,7 @@ SUB mnuAddItemRev(menuStr as string * 39, HilightLetter as string * 1 )  STATIC 
 	IF LEN(menuStr) > 0 THEN TEXTAT mLeft, mCurrrentRow,  menuStr, mNormalClr
 	IF LEN(HilightLetter) = 1 THEN
 		LOCATE mLeft + strInstr(menuStr,HilightLetter) - 1, mCurrrentRow : PRINT  "{REV_ON}" + HilightLetter + "{REV_OFF}" ; : REM '--- Same as TEXTAT except respects PET codes
-		mKeys = mKeys + HilightLetter
+		mKeys = mKeys + UCASE$(HilightLetter) + LCASE$(HilightLetter)		
 	END IF
 	mCurrrentRow = mCurrrentRow + 1
 END SUB
