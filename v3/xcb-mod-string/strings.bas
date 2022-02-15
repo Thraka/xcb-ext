@@ -119,6 +119,7 @@ FUNCTION strInstr AS BYTE (startidx AS BYTE,searchme AS STRING * 96, findme AS S
 	DIM lenFind AS BYTE : lenFind = LEN(findme)
 	DIM start AS BYTE : start = startidx 
 	  
+	IF lenFind = 0 THEN RETURN FALSE  
 	IF lenFind > lenStr THEN RETURN FALSE
 
 	DIM idx AS BYTE FAST
