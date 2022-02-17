@@ -5,7 +5,7 @@ Welcome to my extensions for XC=BASIC. [Click here to learn about XC=BASIC](http
 
 - [String helpers](v3/xcb-mod-string)
 
-  String helpers such as Pading, trimming, replacing and much more.
+  String helpers such as Pading, trimming, replacing, statsWith, endsWith and much more.
 
 - [Color constants](v3/xcb-mod-colors)
 - [Menu routines](v3/xbc-mod-menus)
@@ -28,4 +28,4 @@ Welcome to my extensions for XC=BASIC. [Click here to learn about XC=BASIC](http
 
 - [Error helpers](v2/xcb-ext-error)
 
-  - Methods to throw errors
+  Methods to throw errors
