@@ -4,10 +4,16 @@ Welcome to my extensions for XC=BASIC. [Click here to learn about XC=BASIC](http
 ### v3 Extentions
 
 - [String helpers](v3/xcb-mod-string)
+
+  String helpers such as Pading, trimming, replacing and much more.
+
 - [Color constants](v3/xcb-mod-colors)
 - [Menu routines](v3/xbc-mod-menus)
 - [Disk routines](v3/xbc-mod-disk)
 - [Box drawing routines](v3/xbc-mod-box)
+- [Misc routines](v3/xbc-mod-misc)
+
+  Misc routines including Pause.
 
 
 ### v2 Extensions
