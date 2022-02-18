@@ -9,12 +9,11 @@ REM ****************************************************************************
 'include "strings.bas"
 DECLARE SUB diskChain(pProgram AS STRING * 32, pDescription AS STRING * 36, pDriveNum AS BYTE, pHideSystemLoadingText AS BYTE) STATIC SHARED
 
-
 CONST TRUE  = 255 : CONST FALSE = 0
-'CALL diskChain("menu","** loading my program **",9,TRUE)
 
-REM --> code will never get here as the method will end the program
-end
+'CALL diskChain("menu","** loading my program **",9,TRUE)
+REM --> The method will end the program
+
 
 SUB diskChain(pProgram AS STRING * 32, pDescription AS STRING * 36, pDriveNum AS BYTE,  pHideSystemLoadingText AS BYTE) STATIC SHARED
 
