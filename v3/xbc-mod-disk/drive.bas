@@ -11,6 +11,7 @@ DECLARE FUNCTION dskDriveModel AS STRING * 4 (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskDriveModelConst AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
+DECLARE FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
@@ -28,6 +29,9 @@ REM ========== TESTING =======================
 'END
 REM ===========================================
 
+FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
+	RETURN PEEK(186)
+END FUNCTION
 
 FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 	RETURN VAL(RIGHT$(dskStatus(driveNum),2)) = 0
