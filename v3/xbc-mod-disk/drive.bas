@@ -34,13 +34,14 @@ FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
 END FUNCTION
 
 FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
-	RETURN VAL(RIGHT$(dskStatus(driveNum),2)) = 0
+	IF LEFT$(dskStatus(driveNum),2) = "00" THEN RETURN TRUE
+	RETURN FALSE
 END FUNCTION
 
 FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
 	DIM track$     AS STRING * 2 : DIM sector$   AS STRING * 2
 	DIM ecode$    AS STRING * 2  : DIM msg$       AS STRING * 30
-	OPEN 15, driveNum, 15, "i0"
+	OPEN 15, driveNum, 15
 	INPUT #15, ecode$, msg$, track$, sector$ : CLOSE 15
 	RETURN  ecode$ +  msg$ : REM  +  " " + track$ + " " +  sector$ 
 END FUNCTION
