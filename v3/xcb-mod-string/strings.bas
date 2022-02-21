@@ -30,9 +30,45 @@ DECLARE FUNCTION strLTrim AS STRING * 96 (trimMe AS STRING * 96) STATIC SHARED
 DECLARE FUNCTION strRTrim AS STRING * 96 (trimMe AS STRING * 96) STATIC SHARED
 DECLARE FUNCTION strReplace as string * 96 (searchme as string * 96, findme as string * 96, ReplaceWithMe as string * 96) STATIC SHARED
 DECLARE FUNCTION strCenterString AS STRING * 96 (xText AS STRING * 94, xWidth AS BYTE) STATIC SHARED
+DECLARE FUNCTION strParse AS STRING * 96 (ParseMe AS STRING * 95, DelemChar AS STRING * 1, ElemNum2Return AS BYTE) STATIC SHARED
 REM ================================================================================================================
 
 CONST TRUE  = 255 : CONST FALSE = 0
+
+
+
+REM print strParse("firstone1$findme2$ok3","$",1) - returns 'firstone1'
+REM print strParse("firstone1$findme2$ok3","$",3) - returns 'ok3'
+FUNCTION strParse AS STRING * 96 (ParseMe AS STRING * 95, DelemChar AS STRING * 1, ElemNum2Return AS BYTE) STATIC SHARED
+	CONST IS_1ST = 255
+	DIM FoundCount AS BYTE : FoundCount = 0
+	DIM idx AS BYTE FAST
+	DIM idxStart AS BYTE : idxStart = IS_1ST
+	DIM idxEnd AS BYTE : idxEnd = 0
+	
+	IF ElemNum2Return = 1 THEN idxStart = 0
+	
+	FOR idx = 0 TO LEN(ParseMe) - 1
+		IF PEEK(@ParseMe + 1 + idx) = ASC(DelemChar) THEN 
+			FoundCount = FoundCount + 1
+			IF idxStart = IS_1ST THEN
+				IF FoundCount = ElemNum2Return - 1 THEN
+					idxStart = idx + 1
+				END IF
+			ELSE
+				idxEnd = idx - idxStart
+				EXIT FOR
+			END IF
+		END IF
+	NEXT
+	
+	IF idxStart = IS_1ST THEN RETURN "" 		     : REM --> nothing found
+	IF idxEnd = 0 THEN idxEnd = PEEK(@ParseMe ) : REM --> end of string
+	RETURN MID$(ParseMe, idxStart, idxEnd)
+	
+END FUNCTION
+
+
 
 FUNCTION strCenterString AS STRING * 96 (xText AS STRING * 94, xWidth AS BYTE) STATIC SHARED
 	DIM pad AS BYTE : pad = (xWidth - LEN(xText)) / 2
