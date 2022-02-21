@@ -12,6 +12,7 @@ DECLARE FUNCTION dskDriveModelConst AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
+DECLARE FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
@@ -28,6 +29,17 @@ REM ========== TESTING =======================
 'PRINT dskStatusOK(8)
 'END
 REM ===========================================
+
+FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
+	REM --> tells you if a drive is on the IEC bus, not if it has a disk or is ready
+	REM --> just that its there
+	ON ERROR GOTO errOut
+	OPEN 101,driveNum,1 : CLOSE 101
+	'IF ST() THEN RETURN FALSE : REM --> c64 basic ONLY
+	RETURN TRUE
+errOut:
+	RETURN FALSE
+END FUNCTION
 
 FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
     RETURN PEEK(186)
