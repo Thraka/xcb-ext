@@ -1,7 +1,7 @@
-Include "colorsDS.bas"
-Include "stringsDS.bas"
-Include "menukeysDS.bas"
-Include "menuscrollDS.bas"
+Include "colors.bas"
+Include "strings.bas"
+Include "menukeys.bas"
+Include "menuscroll.bas"
 
 PRINT "{CLR}"
 'GOSUB MENUKEYS_TEST
@@ -9,8 +9,8 @@ GOSUB MENUSCROLL_TEST
 END
 
 MENUSCROLL_TEST:
-	TEXTAT 14,8, "* test menu *",clrGRAY
-	call  mnusInit(14,10, clrWHITE)
+	TEXTAT 14,8, "* test menu *",COLOR_GRAY
+	call  mnusInit(14,10, COLOR_WHITE)
 	call mnusAddItem("change colors","1")
 	call mnusAddItem("set hot keys","2")
 	call mnusAddItem("set data drive","3")
@@ -25,7 +25,7 @@ MENUSCROLL_TEST:
 	
 MENUKEYS_TEST:
 	REM -----------------------------  
-	call  mnuInit(14,10, clrWHITE, clrBLACK)
+	call  mnuInit(14,10, COLOR_WHITE, COLOR_BLACK)
 	call mnuAddItem("change disk","c")
 	call mnuAddItem("format disk","f")
 	call mnuAddItem("check   disk","e")
