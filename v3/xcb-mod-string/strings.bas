@@ -5,9 +5,10 @@ REM *	  High level string routines.
 REM *    Note:: This is not the fastest or cleanest code. As XC=BASIC supports inline ASM all these  
 REM *               methods could / should / maybe...  end up being rewriten.  BUT...  THIS DOES WORK JUST FINE!  ;) 
 REM *
-REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Dec 2021 - Jan 2022        V1.01
+REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Dec 2021 - Jan 2022        V1.02
 REM *   
 REM *   Feb-05-2022, Added strCenterString function
+REM *   Feb-21-2022, Added strParse function
 REM ***********************************************************************************************************
 DECLARE FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STATIC  SHARED 
 DECLARE FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS BYTE) STATIC SHARED OVERLOAD
