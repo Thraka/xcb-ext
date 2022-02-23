@@ -1,0 +1,127 @@
+*** USEFUL COMMODORE 64 POKEs and PEEKs ***
+Compiled from Usenet postings, magazinge articles and
+other Commodore Users by: Paul Panks (dunric@gmail.com)
+04.04.2002
+------------------------------------------------------------------
+From COMPUTE!'s Gazette
+THE PROGRAMMER'S PAGE: November 1988
+"Notebooks and POKEs" - Randy Thompson
+------------------------------------------------------------------
+Many of these POKEs were sent in by Victor J. Fogh of Mariposa, California.
+Others were taken from the COMPUTE! book, MAPPING THE 64 - another great
+source of notebook material. The rest are the result of experience and
+expiramentation. If I've neglected to mention any of your favorite POKEs,
+let me know - chances are they'll appear in a future column.
+------------------------------------------------------------------
+Characters and the Screen
+------------------------------------------------------------------
+POKE 53272,21 switch to uppercase mode
+POKE 53272,23 switch to lowercase mode
+POKE 53280,C change border color (C=0-15)
+POKE 53281,C change screen color (C=0-15)
+POKE 646,C change cursor color (C=0-15)
+POKE 53265,PEEK(53265) AND 23 turn off screen display
+POKE 53265,PEEK(53265) OR 16 turn on screen display
+------------------------------------------------------------------
+The Keyboard
+------------------------------------------------------------------
+POKE 650,128 all keys repeat
+POKE 650,127 no keys repeat
+POKE 650,0 normal repeat
+POKE 657,128 disable SHIFT-Commodore
+POKE 657,0 enable SHIFT-Commodore
+POKE 198,0 clear keyboard buffer
+POKE 649,1 disable keyboard buffering
+POKE 649,0 disable keyboard
+POKE 649,10 normal buffering
+POKE 808,239 disable RUN/STOP key
+POKE 792,193 disable RESTORE
+POKE 808,239:POKE 792,193 disable RUN-STOP/RESTORE
+POKE 808,234 disable RUN-STOP/RESTORE and LIST
+POKE 808,237:POKE 792,71 enable RUN-STOP/RESTORE and LIST
+------------------------------------------------------------------
+Miscellaneous
+------------------------------------------------------------------
+POKE 775,200 disable LIST
+POKE 775,167 enable LIST
+POKE 56341,S set cursor speed (S=0-255)
+POKE 204,0 turn cursor on during a GET
+POKE 204,255 turn cursor back off
+POKE 19,65 turn off question mark during INPUT
+POKE 19,0 turn question mark back on
+POKE 54296,15:POKE 54296,0 make a click sound
+------------------------------------------------------------------
+Below list from IIRG Commodore Pokes & Peeks Page
+(http://www.iirg.org/~iirg/c64pokes.html)
+------------------------------------------------------------------
+The IIRG Commodore Pokes/Peeks Page
+
+The IIRG has collected these Commodore programming tips for you.We will be constantly updating this information as we
+convert our Commodore archives over to the Internet.
+
+poke 1,0 Disable Operating System (Default Value 1,1)
+poke 198,0 Clear Keyboard Buffer
+poke 198,0 Clears Keyboard Buffer (Default Value 198,0)
+poke 22,35 Turns Off Line Numbers
+poke 22,35 With List Command, Shows No Line Numbers
+poke 53265,11 Turns Screen Off
+poke 53265,27 Turns Screen On
+poke 53272,21 Upper Case/Graphics
+poke 53272,23 Upper Case/Lower Case
+poke 56334,129 Clock Reset for 50 Cycle Current
+poke 56590,128 Clock Reset for 50 Cycle Current
+poke 649,0 Disable Keyboard
+poke 649,10 Enable Keyboard
+poke 649,15 Increase Keyboard Buffer
+poke 650,0 Disable Repeat Function
+poke 650,128 Enable Repeat Function
+poke 650,64 Disables Repeat of All Keys
+poke 774,0 With List Command, Shows Only Line Numbers
+poke 774,141 With List Command, Vanishes Completely (Default Value 774,26)
+poke 775,167 Enable List Command
+poke 775,168 Disable List Command
+poke 775,171 Causes Computer to Crash If a LIST Command is Attempted
+poke 775,200 Disable List Command
+poke 788,49 Enable Syop Key and TI$
+poke 788,52 Disables Stop Key and TI$
+poke 808,225 Disable Restore
+poke 808,237 Enable Restore
+poke 808,237 Restore Keyboard
+sys 42562 NEW
+sys 57194 Re-activates EPYX Fastload
+sys 58235 Warm Start
+sys 58260 Initialize
+sys 58726 CLR/HOME
+sys 59062 Advance Cursor
+sys 59137 Previous Line
+sys 59626 Scrolls a Line
+sys 59903 Clears Line of Text
+sys 64738 Cold Start (Reset)
+sys 65126 Alternate Start
+------------------------------------------------------------------
+Speciality Commands
+------------------------------------------------------------------
+poke 792,peek(65532):poke 793,peek(65533)
+Changes Restore Key to Reset
+
+print peek(65408)
+Test for Kernel Number
+
+poke 808,225:poke 818,32 Disable Runstop/Restore
+poke 808,237:poke 818,237 Enable Runstop/Restore
+
+poke 56324,28:poke 56325,0
+Slow List
+
+poke 781,X:poke 782,Y:poke 783,0:sys 65520:Print"Your Message"
+Prints Your Message at X=ROW Number, Y=Column Number
+
+poke 214,X:poke 211,Y:sys 58732:Print "Your Message"
+Prints Your Message at X=ROW Number, Y=Column Number
+
+load"Program Name",8:(SHIFT)(RUN/STOP)
+Loads and Automatically Runs Program
+------------------------------------------------------------------
+*****
+*eof*
+*****
