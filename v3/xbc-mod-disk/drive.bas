@@ -1,9 +1,10 @@
 REM ******************************************************************************************************
-REM *    disk.bas   XC=BASIC Module V3.X 
+REM *    drive.bas   XC=BASIC Module V3.X 
 REM *
 REM *
 REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan-Feb 2022   
+REM *   Added dskDeleteFiles method.                                                        Mar 2022   Between artillery shells! Ukraine!
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -13,14 +14,19 @@ DECLARE FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
 DECLARE FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
+DECLARE FUNCTION dskDeleteFiles AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
 SHARED CONST DRIVE_1541 = 170 : SHARED CONST DRIVE_1541II = 76
 SHARED CONST DRIVE_1581 = 108 : SHARED CONST DRIVE_1571 = 173
 
-DIM x$ AS STRING * 1 : DIM y$ AS STRING * 1
-DIM counter AS BYTE
+DIM x$ AS STRING * 1 
+DIM y$ AS STRING * 1
+DIM counter AS BYTE FAST
+DIM track$     AS STRING * 2 : DIM sector$   AS STRING * 2
+DIM ecode$    AS STRING * 2  : DIM msg$       AS STRING * 30
+
 
 REM ========== TESTING =======================
 'PRINT STR$(dskBlocksFree(8))
@@ -29,6 +35,14 @@ REM ========== TESTING =======================
 'PRINT dskStatusOK(8)
 'END
 REM ===========================================
+
+	
+FUNCTION dskDeleteFiles AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+	OPEN 15,driveNum,15,"s0:" + xFileName 
+	INPUT #15, ecode$, msg$, track$, sector$  : CLOSE 15
+	RETURN VAL(track$) : REM Track holds # of files deleted
+END FUNCTION
+
 
 FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
 	REM --> tells you if a drive is on the IEC bus, not if it has a disk or is ready
@@ -51,11 +65,9 @@ FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 END FUNCTION
 
 FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
-	DIM track$     AS STRING * 2 : DIM sector$   AS STRING * 2
-	DIM ecode$    AS STRING * 2  : DIM msg$       AS STRING * 30
 	OPEN 15, driveNum, 15
 	INPUT #15, ecode$, msg$, track$, sector$ : CLOSE 15
-	RETURN  ecode$ +  msg$ : REM  +  " " + track$ + " " +  sector$ 
+	RETURN  ecode$ + " " +  msg$ +  " " + track$ + " " +  sector$ 
 END FUNCTION
 
 FUNCTION dskDriveModelConst AS BYTE (driveNum AS BYTE) STATIC SHARED
@@ -100,7 +112,7 @@ FUNCTION dskGetBlocksFree AS INT (device AS BYTE) STATIC SHARED
     dskGetBlocksFree = 0
 
     FOR counter AS BYTE = 1 TO 35
-        IF counter = 18 THEN CONTINUE
+        IF counter = 18 THEN CONTINUE FOR
         READ #2, bamBlocksFree, dead, dead, dead
         dskGetBlocksFree = dskGetBlocksFree + bamBlocksFree
     NEXT

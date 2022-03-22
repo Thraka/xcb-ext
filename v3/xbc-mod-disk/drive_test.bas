@@ -43,3 +43,32 @@ IF free1 = free2 THEN
 ELSE
     PRINT "fail, first count "; free1; " second count "; free2
 END IF
+
+
+
+'rem - tests file delete routines.
+'dim jj as byte
+'print "{clr}"
+
+'REM -- create files
+'print "create file 1"
+'OPEN 2,8,2, "@0:" + "testfile1" + ",s,w"
+'PRINT #2,"stuff" : CLOSE 2
+'print "create file 2"
+'OPEN 2,8,2, "@0:" + "testfile2" + ",s,w"
+'PRINT #2,"stuff" : CLOSE 2
+'print "create file 3"
+'OPEN 2,8,2, "@0:" + "testfile3" + ",s,w"
+'PRINT #2,"stuff" : CLOSE 2
+'print "create file 4"
+'OPEN 2,8,2, "@0:" + "testfile4" + ",s,w"
+'PRINT #2,"stuff" : CLOSE 2
+
+'dim kk as byte
+'kk = dskDeleteFiles("test*",8)
+'print "num of files del:" + str$(kk)
+'end
+
+
+
+
