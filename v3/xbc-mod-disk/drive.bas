@@ -5,6 +5,7 @@ REM *
 REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan-Feb 2022   
 REM *   Added dskDeleteFiles method.                                                        Mar 2022   Between artillery shells! Ukraine!
+REM *   Added dskFileExists method.                                                          Mar 2022   Wathcing people stand in line for bread...  
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -15,6 +16,7 @@ DECLARE FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
 DECLARE FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskDeleteFiles AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+DECLARE FUNCTION dskFileExists AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
@@ -37,10 +39,16 @@ REM ========== TESTING =======================
 REM ===========================================
 
 	
+FUNCTION dskFileExists AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+	OPEN 18, driveNum, 4, xFileName + ",s,r" : CLOSE 18
+	RETURN dskStatusOK(driveNum)
+END FUNCTION
+	
+	
 FUNCTION dskDeleteFiles AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 	OPEN 15,driveNum,15,"s0:" + xFileName 
 	INPUT #15, ecode$, msg$, track$, sector$  : CLOSE 15
-	RETURN VAL(track$) : REM Track holds # of files deleted
+	RETURN CBYTE(VAL(track$)) : REM Track holds # of files deleted
 END FUNCTION
 
 
