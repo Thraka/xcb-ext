@@ -3,20 +3,23 @@ REM *    drive.bas   XC=BASIC Module V3.X
 REM *
 REM *
 REM *
-REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan-Feb 2022   
-REM *   Added dskDeleteFiles method.                                                        Mar 2022   Between artillery shells! Ukraine!
-REM *   Added dskFileExists method.                                                          Mar 2022   Wathcing people stand in line for bread...  
+REM *   (c)sadLogic and all of Humankind - Use as you see fit                   Jan-Feb 2022   
+REM *   Added dskFileDelete method.                                                        Mar 2022   Between artillery shells! Ukraine!
+REM *   Added dskFileExists method.                                                         Mar 2022   Wathcing people stand in line for bread...
+REM *   Added dskFormat,dskFormatFast  method.                                   Mar 2022   Quiet for the moment...  
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskDriveModel AS STRING * 4 (driveNum AS BYTE) STATIC SHARED 
 DECLARE FUNCTION dskDriveModelConst AS BYTE (driveNum AS BYTE) STATIC SHARED
-DECLARE FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
+DECLARE FUNCTION dskStatus AS STRING * 96 (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
 DECLARE FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
-DECLARE FUNCTION dskDeleteFiles AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+DECLARE FUNCTION dskFileDelete AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskFileExists AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+DECLARE SUB dskFormat (xDiskName AS STRING * 16, xDiskID AS STRING * 2, driveNum AS BYTE) STATIC SHARED
+DECLARE SUB dskFormatFast (xDiskName AS STRING * 16,driveNum AS BYTE) STATIC SHARED
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
@@ -38,6 +41,18 @@ REM ========== TESTING =======================
 'END
 REM ===========================================
 
+REM -- https://en.wikipedia.org/wiki/Commodore_DOS
+
+SUB dskFormat (xDiskName AS STRING * 16, xDiskID AS STRING * 2, driveNum AS BYTE) STATIC SHARED
+	OPEN 15,driveNum,15,"n0:" + xDiskName + "," + xDiskID
+	CLOSE 15
+END SUB
+
+SUB dskFormatFast (xDiskName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+	REM -- basicly just deletes all files
+	OPEN 15,driveNum,15,"n0:" + xDiskName
+	CLOSE 15
+END SUB
 	
 FUNCTION dskFileExists AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 	OPEN 18, driveNum, 4, xFileName + ",s,r" : CLOSE 18
@@ -45,7 +60,7 @@ FUNCTION dskFileExists AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STAT
 END FUNCTION
 	
 	
-FUNCTION dskDeleteFiles AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+FUNCTION dskFileDelete AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 	OPEN 15,driveNum,15,"s0:" + xFileName 
 	INPUT #15, ecode$, msg$, track$, sector$  : CLOSE 15
 	RETURN CBYTE(VAL(track$)) : REM Track holds # of files deleted
@@ -72,10 +87,10 @@ FUNCTION dskStatusOK AS BYTE (driveNum AS BYTE) STATIC SHARED
 	RETURN FALSE
 END FUNCTION
 
-FUNCTION dskStatus AS STRING * 30 (driveNum AS BYTE) STATIC SHARED
+FUNCTION dskStatus AS STRING * 96 (driveNum AS BYTE) STATIC SHARED
 	OPEN 15, driveNum, 15
 	INPUT #15, ecode$, msg$, track$, sector$ : CLOSE 15
-	RETURN  ecode$ + " " +  msg$ +  " " + track$ + " " +  sector$ 
+	RETURN  ecode$ + "," +  msg$ +  "," + track$ + ","  +  sector$ 
 END FUNCTION
 
 FUNCTION dskDriveModelConst AS BYTE (driveNum AS BYTE) STATIC SHARED
