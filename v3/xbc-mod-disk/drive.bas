@@ -3,11 +3,13 @@ REM *    drive.bas   XC=BASIC Module V3.X
 REM *
 REM *
 REM *
-REM *   (c)sadLogic and all of Humankind - Use as you see fit                                            Jan-Feb 2022   
-REM *   Added dskFileDelete method.                                                                                Mar 2022   Between artillery shells! Ukraine!
-REM *   Added dskFileExists method.                                                                                 Mar 2022   Wathcing people stand in line for bread...
-REM *   Added dskFormat,dskFormatFast  method.                                                            Mar 2022   Quiet for the moment...  
-REM *   Added dskInitialize,dskValidate,dskFileRename,dskFileCopy,dskCMD  methods.   Mar 2022   Watching RU AFV patrolling the streets  
+REM *   (c)sadLogic and all of Humankind - Use as you see fit                          Jan-Feb 2022   
+REM *   Added dskFileDelete method.                                                    JakeBullet   Mar 2022   Between artillery shells! Ukraine!
+REM *   Added dskFileExists method.                                                    JakeBullet   Mar 2022   Watching people stand in line for bread...
+REM *   Added dskFormat,dskFormatFast  method.                                         JakeBullet   Mar 2022   Quiet for the moment...
+REM *   Added dskInitialize,dskValidate,dskFileRename,dskFileCopy,dskCMD  methods.     JakeBullet   Mar 2022   Watching RU AFV patrolling the streets
+REM *   Updated for 1581: dskGetDiskName,dskPrintFiles                                 Thraka       Mar24-2022 Reading news... Don't read the news
+REM *
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -146,7 +148,7 @@ FUNCTION dskDriveModel AS STRING * 4 (driveNum AS BYTE) STATIC SHARED
     IF tt = DRIVE_1581     THEN RETURN "1581"
     IF tt = DRIVE_1571     THEN RETURN "1571"
     IF tt = DRIVE_1541     THEN RETURN "1541"
-    IF tt = DRIVE_1541II  THEN RETURN "41ii"
+    IF tt = DRIVE_1541II   THEN RETURN "41ii"
     RETURN "n/a"
 END FUNCTION
 
@@ -159,32 +161,32 @@ FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
     RETURN ASC(xTMP$ + CHR$(0)) + 256 * ASC(yTMP$ + CHR$(0))
 END FUNCTION
 
-FUNCTION dskGetBlocksFree AS INT (device AS BYTE) STATIC SHARED
-
-    REM Open command channel 15 followed by data channel 2
-    OPEN 15, device, 15
-    OPEN 2, device, 2, "#"
-
-    REM BLOCK-READ with data channel 2 at track 18 sector 0
-    REM BLOCK-POINTER moved to byte 4
-    PRINT #15, "u1 2 0 18 0"
-    PRINT #15, "b-p 2 4"
-
-    DIM bamBlocksFree AS BYTE
-    DIM dead AS BYTE
-
-    dskGetBlocksFree = 0
-
-    FOR counter AS BYTE = 1 TO 35
-        IF counter = 18 THEN CONTINUE FOR
-        READ #2, bamBlocksFree, dead, dead, dead
-        dskGetBlocksFree = dskGetBlocksFree + bamBlocksFree
-    NEXT
-
-    CLOSE 2
-    CLOSE 15
-
-END FUNCTION
+REM FUNCTION dskGetBlocksFree AS INT (device AS BYTE) STATIC SHARED
+REM 
+REM     REM Open command channel 15 followed by data channel 2
+REM     OPEN 15, device, 15
+REM     OPEN 2, device, 2, "#"
+REM 
+REM     REM BLOCK-READ with data channel 2 at track 18 sector 0
+REM     REM BLOCK-POINTER moved to byte 4
+REM     PRINT #15, "u1 2 0 18 0"
+REM     PRINT #15, "b-p 2 4"
+REM 
+REM     DIM bamBlocksFree AS BYTE
+REM     DIM dead AS BYTE
+REM 
+REM     dskGetBlocksFree = 0
+REM 
+REM     FOR counter AS BYTE = 1 TO 35
+REM         IF counter = 18 THEN CONTINUE FOR
+REM         READ #2, bamBlocksFree, dead, dead, dead
+REM         dskGetBlocksFree = dskGetBlocksFree + bamBlocksFree
+REM     NEXT
+REM 
+REM     CLOSE 2
+REM     CLOSE 15
+REM 
+REM END FUNCTION
 
 FUNCTION dskGetDiskName AS STRING * 16 (device AS BYTE) STATIC SHARED
 
@@ -193,14 +195,23 @@ FUNCTION dskGetDiskName AS STRING * 16 (device AS BYTE) STATIC SHARED
 
     REM Taken from page 108 of "the anatomy of the 1541"
     
+    DIM driveType AS BYTE : driveType = dskDriveModelConst(device)
+
     REM Open command channel 15 followed by data channel 2
     OPEN 15, device, 15
     OPEN 2, device, 2, "#"
 
-    REM BLOCK-READ with data channel 2 at track 18 sector 0
-    REM BLOCK-POINTER moved to byte 144
-    PRINT #15, "u1 2 0 18 0"
-    PRINT #15, "b-p 2 144"
+    IF driveType = DRIVE_1581 THEN
+        REM BLOCK-READ with data channel 2 at track 40 sector 0
+        REM BLOCK-POINTER moved to byte 4
+        PRINT #15, "u1 2 0 40 0"
+        PRINT #15, "b-p 2 4"
+    ELSE
+        REM BLOCK-READ with data channel 2 at track 18 sector 0
+        REM BLOCK-POINTER moved to byte 144
+        PRINT #15, "u1 2 0 18 0"
+        PRINT #15, "b-p 2 144"
+    END IF
 
     DIM index AS BYTE : index = 0
     DIM value AS BYTE
@@ -228,10 +239,6 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
     CONST INVERTED_SPACE = 160
     CONST NAME_MAX_LENGTH = 16
 
-    REM Open command channel 15 followed by data channel 2
-    OPEN 15, device, 15
-    OPEN 2, device, 2, "#"
-
     DIM dead AS BYTE
     DIM index as BYTE
     DIM value AS BYTE
@@ -244,6 +251,20 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
     DIM fileSector AS BYTE
     DIM fileType AS BYTE
     DIM fileEntryNameBytePointer AS BYTE
+
+    IF dskDriveModelConst(device) = DRIVE_1581 THEN dirTrack = 40
+
+    REM Open command channel 15 followed by data channel 2
+    OPEN 15, device, 15
+    OPEN 2, device, 2, "#"
+
+    REM To support multiple devices, we should read the first two bytes of the main track, this
+    REM indicates where the directory is located. Generally a 1541 should point to 18 1 and a 
+    REM 1581 should point to 40 1
+    PRINT #15, "u1 2 0 " ; dirTrack ; " 0"
+    READ #2, dirTrack, dirSector
+
+    PRINT #15, "u1 2 0 " ; dirTrack ; " " ; dirSector
 
     REM start at end of DO which reads the bytes to indicate the "next" block of directory entries
     REM in this case, it's the first block of directories and obtains the next set of entries, if any.
@@ -295,7 +316,8 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
         IF dirTrack = 0 AND dirSector = $FF THEN EXIT DO
 
         readtrack:
-        PRINT #15, "u1 2 0 " , dirTrack , dirSector
+        PRINT #15, "u1 2 0 " ; dirTrack ; " " ; dirSector
+        REM PRINT #15, "u1 2 0 " , dirTrack , dirSector
         PRINT #15, "b-p 2 0"
     
         REM read the next track/sector for directory
