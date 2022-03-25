@@ -3,11 +3,11 @@ REM *    drive.bas   XC=BASIC Module V3.X
 REM *
 REM *
 REM *
-REM *   (c)sadLogic and all of Humankind - Use as you see fit                          Jan-Feb 2022   
-REM *   Added dskFileDelete method.                                                    JakeBullet   Mar 2022   Between artillery shells! Ukraine!
-REM *   Added dskFileExists method.                                                    JakeBullet   Mar 2022   Watching people stand in line for bread...
-REM *   Added dskFormat,dskFormatFast  method.                                         JakeBullet   Mar 2022   Quiet for the moment...
-REM *   Added dskInitialize,dskValidate,dskFileRename,dskFileCopy,dskCMD  methods.     JakeBullet   Mar 2022   Watching RU AFV patrolling the streets
+REM *   (c)sadLogic and all of Humankind - Use as you see fit                           Jan-Feb 2022   
+REM *   Added dskFileDelete method.                                                                JakeBullet   Mar 2022   Between artillery shells! Ukraine!
+REM *   Added dskFileExists method.                                                                JakeBullet   Mar 2022   Watching people stand in line for bread...
+REM *   Added dskFormat,dskFormatFast  method.                                          JakeBullet   Mar 2022   Quiet for the moment...
+REM *   Added dskInitialize,dskValidate,dskFileRename,dskFileCopy,dskCMD  JakeBullet   Mar 2022   Watching RU AFV patrolling the streets
 REM *   Updated for 1581: dskGetDiskName,dskPrintFiles                                 Thraka       Mar24-2022 Reading news... Don't read the news
 REM *
 REM ******************************************************************************************************
@@ -234,11 +234,27 @@ FUNCTION dskGetDiskName AS STRING * 16 (device AS BYTE) STATIC SHARED
 
 END FUNCTION
 
+
+FUNCTION GetFileType AS STRING * 4 (fileTypeByte AS BYTE) STATIC
+	CONST FILE_TYPE_PRG = 130
+    CONST FILE_TYPE_SEQ = 129
+    CONST FILE_TYPE_USR = 131
+
+	IF fileTypeByte = FILE_TYPE_PRG  THEN RETURN "prg"
+	IF fileTypeByte = FILE_TYPE_SEQ THEN RETURN "seq"
+	IF fileTypeByte = FILE_TYPE_USR THEN RETURN "usr"
+	'IF fileTypeByte = FILE_TYPE_USR THEN RETURN "rel"
+	'IF fileTypeByte = FILE_TYPE_USR THEN RETURN "del"
+	'IF fileTypeByte = FILE_TYPE_USR THEN RETURN "cbm"
+	
+	RETURN STR$(fileTypeByte)
+END FUNCTION
+
 SUB dskPrintFiles(device AS BYTE) STATIC SHARED
 
     CONST INVERTED_SPACE = 160
     CONST NAME_MAX_LENGTH = 16
-
+    
     DIM dead AS BYTE
     DIM index as BYTE
     DIM value AS BYTE
@@ -288,7 +304,9 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
             READ #2, fileType, fileTrack, fileSector
 
             REM if there is no data for this directory entry, move to next
-            IF fileType = 0 AND fileTrack = 0 AND fileSector = 0 THEN CONTINUE FOR 
+            IF fileType = 0 AND fileTrack = 0 AND fileSector = 0 THEN 
+				CONTINUE FOR
+			END IF 
 
             REM reset file name buffer
             index = 0
@@ -308,7 +326,7 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
 
             REM set file name actual buffer size and print
             POKE @fileName, index
-            PRINT fileName
+            PRINT fileName ; GetFileType(fileType)
 
         NEXT counter
 
