@@ -9,7 +9,7 @@ REM *   Added dskFileExists method.                                             
 REM *   Added dskFormat,dskFormatFast  method.                                          JakeBullet   Mar 2022   Quiet for the moment...
 REM *   Added dskInitialize,dskValidate,dskFileRename,dskFileCopy,dskCMD  JakeBullet   Mar 2022   Watching RU AFV patrolling the streets
 REM *   Updated for 1581: dskGetDiskName,dskPrintFiles                                 Thraka       Mar24-2022 Reading news... Don't read the news
-REM *    
+REM *   Updated dskPrintFiles to include file size                                            JakeBullet   Mar-19-2022  Bombing in the distance...
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -236,17 +236,23 @@ END FUNCTION
 
 
 FUNCTION GetFileType AS STRING * 4 (fileTypeByte AS BYTE) STATIC
+	REM -- There is a BUG at the moment - this needs to be 'STRING * 3'
+	
 	CONST FILE_TYPE_PRG = 130
     CONST FILE_TYPE_SEQ = 129
     CONST FILE_TYPE_USR = 131
+    CONST FILE_TYPE_REL = 132
+    CONST FILE_TYPE_CBM = 133 : REM 1581 DIR
+    CONST FILE_TYPE_DEL = 0
 
 	IF fileTypeByte = FILE_TYPE_PRG  THEN RETURN "prg"
 	IF fileTypeByte = FILE_TYPE_SEQ THEN RETURN "seq"
 	IF fileTypeByte = FILE_TYPE_USR THEN RETURN "usr"
-	'IF fileTypeByte = FILE_TYPE_USR THEN RETURN "rel"
-	'IF fileTypeByte = FILE_TYPE_USR THEN RETURN "del"
-	'IF fileTypeByte = FILE_TYPE_USR THEN RETURN "cbm"
+	IF fileTypeByte = FILE_TYPE_CBM THEN RETURN "dir"
+	IF fileTypeByte = FILE_TYPE_REL  THEN RETURN "rel"
+	IF fileTypeByte = FILE_TYPE_DEL THEN RETURN "del"
 	
+	REM -- should never get here
 	RETURN STR$(fileTypeByte)
 END FUNCTION
 
@@ -258,6 +264,11 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
     DIM dead AS BYTE
     DIM index as BYTE
     DIM value AS BYTE
+
+	dim BlocksUsed as int  
+	dim BlocksUsedLo as byte
+	dim BlocksUsedHi as byte
+	DIM BlocksCounter AS BYTE FAST
 
     DIM dirTrack AS BYTE: dirTrack = 18
     DIM dirSector AS BYTE: dirSector = 1
@@ -292,7 +303,7 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
         fileEntryNameBytePointer = 2
 
         REM cycle files in block
-        FOR counter AS BYTE = 0 to 7
+        FOR counter = 0 to 7
 
             REM set pointer
             fileEntryNameBytePointer = fileEntryNameBytePointer + counter * 32
@@ -304,9 +315,8 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
             READ #2, fileType, fileTrack, fileSector
 
             REM if there is no data for this directory entry, move to next
-            IF fileType = 0 AND fileTrack = 0 AND fileSector = 0 THEN 
-				CONTINUE FOR
-			END IF 
+            'IF fileType = 0 AND fileTrack = 0 AND fileSector = 0 THEN CONTINUE FOR
+            IF fileType = 0 THEN 	CONTINUE FOR
 
             REM reset file name buffer
             index = 0
@@ -323,10 +333,23 @@ SUB dskPrintFiles(device AS BYTE) STATIC SHARED
                 POKE @fileName + index, value
 
             LOOP UNTIL value = INVERTED_SPACE OR index = NAME_MAX_LENGTH
-
+            
+            REM -- block size of file
+            BlocksUsed = 0
+            BlocksUsedLo = 0
+            BlocksUsedHi = 0
+            FOR BlocksCounter = index  TO 24
+				GET #2, dead
+            NEXT
+            GET #2, BlocksUsedLo 
+            GET #2, BlocksUsedHi 
+            BlocksUsed = (BlocksUsedHi * 256)  +  (BlocksUsedLo  MOD 256)
+            
             REM set file name actual buffer size and print
-            POKE @fileName, index
-            PRINT fileName ; GetFileType(fileType)
+            POKE @fileName, index - 1
+            'print "-------" ; "lo:" ; (BlocksUsedLo) ; "   hi:" ; (BlocksUsedHi ) 
+            PRINT BlocksUsed ; "   "  ; fileName ; "." ; GetFileType(fileType) 
+            'print "----------------------------------------"
 
         NEXT counter
 
