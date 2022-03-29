@@ -4,9 +4,24 @@ Include "menukeys.bas"
 Include "menuscroll.bas"
 
 PRINT "{CLR}"
-'GOSUB MENUKEYS_TEST
-GOSUB MENUSCROLL_TEST
+GOSUB MENUKEYS_TEST
+'GOSUB MENUSCROLL_TEST
 END
+	
+MENUKEYS_TEST:
+	REM -----------------------------  
+	call  mnuInit(14,10, COLOR_WHITE, COLOR_BLACK)
+	call mnuAddItem("change disk","c")
+	call mnuAddItem("format disk","f")
+	call mnuAddItem("check  disk","i")
+	call mnuAddItemSpacer()
+	call mnuAddItem("exit program","x")
+
+	dim key as byte : key = mnuGetKey()	
+	textat 0,20,"key pressed: " + LCASE$(CHR$(key))
+	RETURN
+
+
 
 MENUSCROLL_TEST:
 	TEXTAT 14,8, "* test menu *",COLOR_GRAY
@@ -22,17 +37,3 @@ MENUSCROLL_TEST:
 	RETURN
 
 	
-	
-MENUKEYS_TEST:
-	REM -----------------------------  
-	call  mnuInit(14,10, COLOR_WHITE, COLOR_BLACK)
-	call mnuAddItem("change disk","c")
-	call mnuAddItem("format disk","f")
-	call mnuAddItem("check   disk","e")
-	call mnuAddItem("","")
-	call mnuAddItem("exit program","x")
-
-	dim key as byte : key = mnuGetKey()
-	textat 0,20,"key pressed: " + LCASE$(CHR$(key))
-	RETURN
-
