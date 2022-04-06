@@ -1,11 +1,11 @@
 REM ***********************************************************************************************************
 REM *    Menukeys.Bas   XC=BASIC Module  V3.X 
 REM *    
-REM *	 Simple MENU routine. 
+REM *	  Simple MENU routine. 
 REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan 2022    
 REM *    
-REM *   Updated to get around some string bugs                                    JakeBullet  Mar-29-2022   Watch RU soldiers driving stolen cars...    
+REM *   Updated to get around some string bugs                                        JakeBullet  Mar-29-2022   Watch RU soldiers driving stolen cars...    
 REM ***********************************************************************************************************
 'Include "strings.bas"
 'Include "colors.bas"

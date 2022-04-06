@@ -4,6 +4,7 @@ REM *
 REM *	  Simple MENU SCROLLIBLE routine. 
 REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan-Feb 2022        V1.00
+REM *  
 REM ***********************************************************************************************************
 'Include "strings.bas"
 'Include "colors.bas"
@@ -34,7 +35,9 @@ DIM tmp AS BYTE
 DIM strtmp AS STRING * 39
 
 FUNCTION mnusGetKey AS STRING  * 1 ()  STATIC SHARED
-	POKE 650,127 : REM --> no keys repeat
+	'#if C64
+	POKE 650,127 : REM --> no keys repeat  
+	'#endif
 	REM --> Hilight 1st item
 	mLastRow = mCurrrentRow - mTop
 	mCurrrentRow = 0
@@ -55,7 +58,9 @@ mnuDoAgain:
 		CALL hiLightMenuItem(CBYTE(mCurrrentRow), mLastRowHilighted)
 	END IF
 	IF tmp = keyRETURN THEN 
+		'#if C64
 		POKE 650,0 : REM --> set keyboard normal repeat	
+		'#endif
 		RETURN MID$(mKeys, CBYTE(mCurrrentRow), 1)
 	END IF		
 	GOTO mnuDoAgain	
@@ -63,8 +68,6 @@ mnuDoAgain:
 END FUNCTION
 
 SUB hiLightMenuItem(Row2hiLight AS BYTE, oldItem AS BYTE) STATIC
-	'locate 0,0 : print "row2hilight: " + str$(Row2hiLight) + "      "  ;
-	'locate 0,1 : print "olditem: " + str$(oldItem)  + "      ";
 	IF olditem <> 255 THEN
 		REM --> un-hilighted OLD entry
 		strtmp = readCharsFromScreen(mLeft, mTop + oldItem, mMaxLength)  
@@ -90,6 +93,7 @@ SUB mnusInit(xLeft AS BYTE ,xTop AS BYTE , xColor AS BYTE ) STATIC SHARED
 	mTop = xTop
 	mColor = xColor
 	mCurrrentRow = xTop
+	mKeys = "" 
 END SUB
 
 FUNCTION readCharsFromScreen AS STRING * 39 (xCol AS BYTE, xRow AS BYTE, xLength AS BYTE) STATIC
@@ -112,14 +116,19 @@ END FUNCTION
 
 SUB PRINTAT (xCol AS BYTE, xRow AS BYTE, xText AS STRING * 40, xColor AS BYTE) STATIC
 	DIM tmp1 AS BYTE
+	'#if C64
 	tmp1 = PEEK(646) : REM -->  save old color
-	POKE 646,xColor : REM --- C64 only
+	POKE 646,xColor 
+	'#endif
 	LOCATE xCol, xRow :  PRINT xText ;
+	'#if C64
 	POKE 646,tmp1 : REM --- C64 only
+	'#endif
 END SUB
 
 FUNCTION ASCII2PETSCII AS BYTE (ascii AS BYTE) STATIC
 	REM --> https://sta.c64.org/cbm64pettoscr.html
+	REM --> needs to be revisited,. not quite correct
 	IF ascii >= 128 AND ascii <= 159 THEN RETURN ascii - 128
 	IF ascii >= 32  AND ascii <= 63   THEN RETURN ascii 
 	IF ascii >= 0    AND ascii <= 31   THEN RETURN ascii + 64
