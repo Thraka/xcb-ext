@@ -10,6 +10,8 @@ REM *   Added dskFormat,dskFormatFast  method.                                  
 REM *   Added dskInitialize,dskValidate,dskFileRename,dskFileCopy,dskCMD  JakeBullet   Mar 2022   Watching RU AFV patrolling the streets
 REM *   Updated for 1581: dskGetDiskName,dskPrintFiles                                 Thraka       Mar24-2022 Reading news... Don't read the news
 REM *   Updated dskPrintFiles to include file size                                            JakeBullet   Mar-19-2022  Bombing in the distance...
+REM *   Added dskSafeKill method                                                                    JakeBullet  April-7-2022  City still occupied.
+REM *   Fixed dskFileExists method                                                                   JakeBullet  April-8-2022  City still occupied. 2 weeks of medication left
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -29,7 +31,8 @@ DECLARE FUNCTION dskValidate AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskCheckDisk AS BYTE (driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskFileRename AS BYTE  (xOldFileName AS STRING * 16,xNewFileName AS STRING * 16,driveNum AS BYTE) STATIC SHARED
 DECLARE FUNCTION dskFileCopy AS BYTE  (xOldFileName AS STRING * 16,xNewFileName AS STRING * 16,driveNum AS BYTE) STATIC SHARED
-DECLARE FUNCTION dskCMD AS BYTE  (xCMD AS STRING * 94,driveNum AS BYTE) STATIC SHARED	
+DECLARE FUNCTION dskCMD AS BYTE  (xCMD AS STRING * 94,driveNum AS BYTE) STATIC SHARED
+DECLARE SUB dskSafeKill (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED	
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
@@ -98,16 +101,25 @@ FUNCTION dskFormatFast AS BYTE (xDiskName AS STRING * 16, driveNum AS BYTE) STAT
 END FUNCTION
 	
 FUNCTION dskFileExists AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
-	RETURN dskCMD(xFileName + ",s,r",driveNum)
+	OPEN 9,driveNum,9, "0:" + xFileName + ",s,r" : REM --- open file as SEQ
+	CLOSE 9
+	counter = CBYTE(VAL(LEFT$(dskStatus(driveNum),2))) : REM --- counter is just a dummy var
+	IF counter =  0 THEN RETURN TRUE     : REM --- file  found
+	IF counter = 62 THEN RETURN FALSE  : REM --- file not found
+	IF counter = 64 THEN RETURN TRUE   : REM --- file found but not SEQ (file type mismatch)
+	RETURN FALSE
 END FUNCTION
-	
-	
+		
 FUNCTION dskFileDelete AS BYTE (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
 	OPEN 15,driveNum,15,"s0:" + xFileName 
 	INPUT #15, ecode$, msg$, track$, sector$  : CLOSE 15
 	RETURN CBYTE(VAL(track$)) : REM Track holds # of files deleted
 END FUNCTION
 
+SUB dskSafeKill (xFileName AS STRING * 16, driveNum AS BYTE) STATIC SHARED
+	REM --- kill the file if it exists, return nothing, we do not care
+	counter = dskFileDelete(xFileName,driveNum) 
+END SUB
 
 FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
 	REM --> tells you if a drive is on the IEC bus and powered on, not if it has a disk or is ready
