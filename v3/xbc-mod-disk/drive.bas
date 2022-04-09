@@ -225,29 +225,30 @@ FUNCTION dskGetDiskName AS STRING * 16 (device AS BYTE) STATIC SHARED
         PRINT #15, "b-p 2 144"
     END IF
 
-    DIM index AS BYTE : index = 0
+    'DIM index AS BYTE : index = 0
+    counter = 0
     DIM value AS BYTE
 
     DO
 
-        index = index + 1
+        counter = counter + 1
 
         REM read a string character and poke into the return string
         GET #2, value
-        POKE @dskGetDiskName + index, value
+        POKE @dskGetDiskName + counter, value
 
-    LOOP UNTIL value = INVERTED_SPACE OR index = NAME_MAX_LENGTH
+    LOOP UNTIL value = INVERTED_SPACE OR counter = NAME_MAX_LENGTH
 
     CLOSE 2
     CLOSE 15
 
     REM set the size if the return string
-    POKE @dskGetDiskName, index - 1
+    POKE @dskGetDiskName, counter - 1
 
 END FUNCTION
 
 
-FUNCTION GetFileType AS STRING * 4 (fileTypeByte AS BYTE) STATIC
+FUNCTION GetFileType AS STRING * 3 (fileTypeByte AS BYTE) STATIC
 	REM -- There is a BUG at the moment - this needs to be 'STRING * 3'
 	
 	CONST FILE_TYPE_PRG = 130
