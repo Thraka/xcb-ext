@@ -4,26 +4,36 @@ REM *
 REM *   Misc routines - cut and paste in your program!
 REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan-Feb 2022   
+REM *
+REM *   added isNumeric and isAlpha methods                                     Apr-11-2022   JakeBullet
 REM ******************************************************************************************************
 
 CONST TRUE  = 255
 CONST FALSE = 0
 
 DECLARE SUB Pause (pSeconds2Sleep AS FLOAT, pPALtiming AS BYTE) STATIC SHARED
-
+DECLARE FUNCTION isNumeric AS BYTE (pStr AS STRING * 1) STATIC SHARED
+DECLARE FUNCTION isAlpha AS BYTE (pStr AS STRING * 1) STATIC SHARED
 
 'CALL pause(0.5,true)
 'end
 
+FUNCTION isNumeric AS BYTE (pStr AS STRING * 1) STATIC SHARED
+	RETURN (ASC (pStr) > 47 AND ASC (pStr) < 58)
+END FUNCTION
+
+FUNCTION isAlpha AS BYTE (pStr AS STRING * 1) STATIC SHARED
+	RETURN (ASC (pStr) > 64 AND ASC (pStr) < 91)
+END FUNCTION
 
 SUB Pause (pSeconds2Sleep AS FLOAT, pPALtiming AS BYTE) STATIC SHARED
 	CONST VICII_RASTER = $d012
 	DIM numOfSec AS WORD
 	
 	IF pPALtiming = TRUE THEN 
-		numOfSec = ABS(CFLOAT(50) * pSeconds2Sleep)
+		numOfSec = CWORD(ABS(CFLOAT(50) * pSeconds2Sleep))
 	ELSE
-		numOfSec = ABS(CFLOAT(60) * pSeconds2Sleep)
+		numOfSec = CWORD(ABS(CFLOAT(60) * pSeconds2Sleep))
 	END IF
 	
 	FOR ii AS WORD = 0 to numOfSec
