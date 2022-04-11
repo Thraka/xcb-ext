@@ -29,7 +29,7 @@ DIM mTMP AS BYTE
 
 SUB mnuInit(xLeft AS BYTE ,xTop AS BYTE , NormalColor as BYTE, HilightColor AS BYTE ) STATIC SHARED
 	mLeft = xLeft
-	mKeys = "`" : REM -- should be blank, BUG!!!!!
+	mKeys = "" 
 	mNormalClr = NormalColor
 	mHilightClr = HilightColor
 	mCurrrentRow = xTop
