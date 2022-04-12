@@ -9,9 +9,10 @@ REM *   (c)sadLogic and all of Humankind - Use as you see fit                   
 REM *   
 REM *   Feb-05-2022, Added strCenterString function
 REM *   Feb-21-2022, Added strParse function
+REM *   Apr-11-2022, Fixed strPadR, strPadL and strStrings methods
 REM ***********************************************************************************************************
-DECLARE FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STATIC  SHARED 
-DECLARE FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS BYTE) STATIC SHARED OVERLOAD
+'DECLARE FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS BYTE) STATIC SHARED
+DECLARE FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STATIC  SHARED  
 DECLARE FUNCTION strSPC AS STRING * 96 (count AS BYTE) STATIC  SHARED
 DECLARE FUNCTION strPadR AS STRING * 96 (padme AS STRING * 96,count AS BYTE) STATIC SHARED
 DECLARE FUNCTION strPadR AS STRING * 96 (padme AS STRING * 96,count AS BYTE, char AS STRING * 1) STATIC SHARED OVERLOAD
@@ -36,7 +37,10 @@ REM ============================================================================
 
 CONST TRUE  = 255 : CONST FALSE = 0
 
+DIM mTMP AS BYTE
 
+'textat 0,20, strStrings(20,"g")
+'end 
 
 REM print strParse("firstone1$findme2$ok3","$",1) - returns 'firstone1'
 REM print strParse("firstone1$findme2$ok3","$",3) - returns 'ok3'
@@ -72,8 +76,8 @@ END FUNCTION
 
 
 FUNCTION strCenterString AS STRING * 96 (xText AS STRING * 94, xWidth AS BYTE) STATIC SHARED
-	DIM pad AS BYTE : pad = (xWidth - LEN(xText)) / 2
-	RETURN (strSTRINGS(pad,32) + xText + strSTRINGS(pad,32))
+	mTMP = (xWidth - LEN(xText)) / 2
+	RETURN (strSTRINGS(mTMP," ") + xText + strSTRINGS(mTMP," "))
 END FUNCTION
 
 REM =================================================================================================
@@ -94,30 +98,38 @@ END FUNCTION
 
 
 REM =================================================================================================
-FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STATIC  SHARED 
-    RETURN strStrings(count, ASC(character))
-END FUNCTION
-FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS BYTE) STATIC SHARED OVERLOAD
-	POKE @strStrings, count
-	MEMSET @strStrings + 1, count, character
+FUNCTION strStrings AS STRING * 96 (count AS BYTE, character AS STRING * 1) STATIC  SHARED  
+	REM *** THIS WORKED AT ONE TIME ***
+	'POKE @strStrings, count   
+	'MEMSET @strStrings + 1, count, ASC(character)
+	REM ---------------------------------------------------
+	 strStrings = ""
+	for x as byte = 1 to count 
+		strStrings = strStrings + character
+	next
 END FUNCTION
 FUNCTION strSPC AS STRING * 96 (count AS BYTE) STATIC  SHARED
 	RETURN strStrings(count," ")
 END FUNCTION
 
 
+
 REM =================================================================================================
 FUNCTION strPadR AS STRING * 96 (padme AS STRING * 96,count AS BYTE) STATIC  SHARED
-	RETURN padme + (strSPC(count))
+	RETURN strPadR(padme,count," ")
 END FUNCTION
 FUNCTION strPadR AS STRING * 96 (padme AS STRING * 96,count AS BYTE, char AS STRING * 1) STATIC SHARED OVERLOAD
-	RETURN padme + (strStrings(count, char))
+	mTMP = LEN(padme)
+	IF mTMP > count THEN RETURN LEFT$(padme,count)
+	RETURN (padme + (strStrings(count - mTMP, " ")))
 END FUNCTION
 FUNCTION strPadL AS STRING * 96 (padme AS STRING * 96,count AS BYTE) STATIC  SHARED
-	RETURN (strSPC(count) + padme)
+	RETURN strPadL(padme,count," ")
 END FUNCTION
 FUNCTION strPadL AS STRING * 96 (padme AS STRING * 96,count AS BYTE, char AS STRING * 1) STATIC SHARED OVERLOAD
-	RETURN (strStrings(count, char) + padme)
+	mTMP = LEN(padme)
+	IF mTMP > count THEN RETURN LEFT$(padme,count)
+	RETURN (strStrings(count - mTMP, char) + padme)
 END FUNCTION
 
 
