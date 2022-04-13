@@ -12,6 +12,7 @@ REM *   Updated for 1581: dskGetDiskName,dskPrintFiles                          
 REM *   Updated dskPrintFiles to include file size                                            JakeBullet   Mar-19-2022  Bombing in the distance...
 REM *   Added dskSafeKill method                                                                    JakeBullet  April-7-2022  City still occupied.
 REM *   Fixed dskFileExists method                                                                   JakeBullet  April-8-2022  City still occupied. 2 weeks of medication left
+REM *   Fixed dskIsDriveAttatched method                                                      JakeBullet  April-13-2022  Will this war ever end?
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -124,12 +125,9 @@ END SUB
 FUNCTION dskIsDriveAttatched AS BYTE (driveNum AS BYTE) STATIC SHARED
 	REM --> tells you if a drive is on the IEC bus and powered on, not if it has a disk or is ready
 	REM --> just that its there
-	ON ERROR GOTO errOut
 	OPEN 101,driveNum,1 : CLOSE 101
-	'IF ST() THEN RETURN FALSE : REM --> c64 basic ONLY
+	IF ST() = 128 THEN RETURN FALSE 
 	RETURN TRUE
-errOut:
-	RETURN FALSE
 END FUNCTION
 
 FUNCTION dskGetCurrentDriveInUse AS BYTE () STATIC SHARED
