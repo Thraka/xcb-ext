@@ -73,25 +73,17 @@ DrawColorMenu:
 	
 GetKeyMenu:
 	KPressed = mnumGetKey()
-	'call scrnDebugTextBtm( str$(mCurrentDisk))
+
 ForceScroll:	
 	REM -------------- DIR SCROLL MENU KEYS  -----------------------------------
 	IF KPressed = KEY_DOWN OR KPressed = KEY_UP OR KPressed = KEY_RETURN THEN
 	
-		REM --- pass to dir scroll menu
+		REM --- pass key to dir scroll menu
 		DirSelectedNdx = mnusProcessKey(KPressed) 
+
+		REM --- Enter was hit, run program
+		IF DirSelectedNdx <> SCROLL_MENU_OK THEN CALL RunPrg(DirSelectedNdx, mCurrentDisk)
 		
-		IF DirSelectedNdx <> SCROLL_MENU_OK THEN
-		
-			REM --- Enter was hit, run program
-			IF gDirDirectory(DirSelectedNdx).fileType = FILE_TYPE_PRG THEN
-				REM --- this will end this program and run the new one
-				CALL diskChain(gDirDirectory(DirSelectedNdx).fileName, "loading...", mCurrentDisk,  FALSE)
-			ELSE
-				CALL scrnMsgBoxOk("Cannot run this program","", gColors.Box,gColors.txtNormal)
-			END IF
-			
-		END IF
 		GOTO GetKeyMenu
 	END IF
 
@@ -126,23 +118,12 @@ ForceScroll:
 		CALL popupValidateDisk(mCurrentDisk )
 		GOTO GetKeyMenu
 	END IF
-	
-	
-	
+		
 	REM --- format new disk -------------------------------------------------
 	IF keyPress$ = "k" THEN 
-		mTMP = menuGetDrive("Format disk")
-		IF mTMP <> 255 THEN 
-			IF mTMP = 0 THEN mTMP = 10
-			IF mTMP = 1 THEN mTMP = 11
-			
-			
-			'CALL dskFormat ("","",CBYTE(VAL(CHR$(mTMP))))
-		END IF
+		CALL popupFormatDisk(mCurrentDisk)
 		GOTO GetKeyMenu
 	END IF
-	
-	
 	
 	REM --- out of here ------------------------------------------------
 	IF keyPress$ = "q" THEN RETURN

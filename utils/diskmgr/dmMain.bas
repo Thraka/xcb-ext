@@ -4,6 +4,7 @@ DIM mJunkVarByte AS BYTE FAST
 DIM mJunkVarStr AS STRING * 96
 DIM mDirPointer AS BYTE
 
+DECLARE SUB RunPrg(pNdx as BYTE, pDisk AS BYTE) STATIC SHARED
 DECLARE SUB ClearFilesWindow() STATIC   
 DECLARE SUB logDrive(xDrive AS BYTE) STATIC SHARED
 DECLARE SUB ReadDiskHeader(xDrive AS BYTE) STATIC 
@@ -56,6 +57,20 @@ SUB populateArr() STATIC
 	
 END SUB
 
+
+SUB RunPrg(pNdx as BYTE, pDisk AS BYTE) static shared
+	
+	IF gDirDirectory(pNdx).fileType = FILE_TYPE_PRG THEN
+		REM --- this will end this program and run the new one
+		CALL diskChain(gDirDirectory(pNdx).fileName, "loading...", pDisk,  FALSE)
+	ELSE
+		CALL scrnMsgBoxOk("Cannot run this program",gDirDirectory(pNdx).fileName, gColors.Box,gColors.txtNormal)
+	END IF
+
+END SUB
+
+
+
 SUB popupValidateDisk(curDisk AS BYTE) STATIC SHARED
 
 	DIM disknum AS BYTE
@@ -93,6 +108,67 @@ FUNCTION popupLogDisk AS BYTE (curDisk AS BYTE)  STATIC SHARED
 	RETURN curDisk
 	
 END FUNCTION
+
+
+SUB popupFormatDisk(curDisk AS BYTE) STATIC SHARED
+
+	DIM disknum AS BYTE
+	disknum = menuGetDrive("Format Disk")
+	IF disknum <> 255 THEN 
+		IF disknum = 0 THEN disknum = 10
+		IF disknum = 1 THEN disknum = 11
+		
+		CALL screenSave()
+		CALL boxDraw(3,6,17,8,gColors.box, TRUE,"Format method")
+		CALL mnuInit(7,9, gColors.txtNormal ,gColors.txtBright)
+		CALL mnuAddItem("Format new","n") 
+		CALL mnuAddItem("Format fast","F")
+		CALL mnuAddItemSpacer()
+		CALL mnuAddItem("Cancel","C")
+		
+		DIM KPressed AS BYTE : KPressed = mnuGetKey()
+		CALL screenRestore()
+		
+		mJunkVarStr = LCASE$(CHR$(KPressed)) 
+		IF mJunkVarStr = "c" THEN RETURN : REM ---out of here
+				
+		CALL screenSave()
+		
+		REM ----------------------------------------------
+		dim dn$ as string * 16
+		dim id$ as string * 2
+		print "{clr}"
+		print "Needs to write an editor!"
+		input "{down}Enter disk name (16 char)" ; dn$
+		IF mJunkVarStr <> "f" THEN
+			input "Enter disk id (2 char)" ; id$
+		else
+			id$ ="1"
+		end if
+		iF dn$ = "" or id$ = "" THEN
+			CALL screenRestore()
+			RETURN
+		END IF
+		
+		REM ----------------------------------------------
+				
+		CALL boxDraw(3,10,32,4,gColors.box, TRUE)
+		TEXTAT 5,12, strCenterString(("Formating disk #" + STR$(disknum)) ,30),gColors.txtNormal
+		IF mJunkVarStr = "f" THEN
+			mJunkVarByte = dskFormatFast(dn$,disknum)
+		ELSE
+			mJunkVarByte = dskFormat(dn$,id$,disknum)
+		END IF	
+		CALL screenRestore()
+			
+		IF curDisk = disknum THEN 
+			CALL logDrive(disknum)
+		END IF	
+		
+	END IF
+	
+END SUB
+
 
 
 FUNCTION menuGetDrive AS BYTE (pPrompt AS STRING * 20) STATIC SHARED
@@ -145,7 +221,8 @@ SUB ReadDiskHeader(xDrive AS BYTE) STATIC
   
 	REM --- disk label
 	mJunkVarStr = UCASE$(mJunkVarStr)
-    TEXTAT 0,2, LEFT$(mJunkVarStr,LEN(mJunkVarStr) - 2) + "," + RIGHT$(mJunkVarStr,2), gColors.txtAlert  
+	mJunkVarStr = LEFT$(mJunkVarStr,LEN(mJunkVarStr) - 2) + "," + RIGHT$(mJunkVarStr,2)
+    TEXTAT 0,2, strPADR(mJunkVarStr ,20), gColors.txtAlert
     
     REM --- BLOCKS FREE
     DIM BF AS INT
