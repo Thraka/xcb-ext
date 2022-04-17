@@ -6,6 +6,7 @@ REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                     Jan-Feb 2022   
 REM *
 REM *   added isNumeric and isAlpha methods                                     Apr-11-2022   JakeBullet
+REM *   added IFF method                                                        Apr-17-2022   JakeBullet
 REM ******************************************************************************************************
 
 CONST TRUE  = 255
@@ -14,9 +15,16 @@ CONST FALSE = 0
 DECLARE SUB Pause (pSeconds2Sleep AS FLOAT, pPALtiming AS BYTE) STATIC SHARED
 DECLARE FUNCTION isNumeric AS BYTE (pStr AS STRING * 1) STATIC SHARED
 DECLARE FUNCTION isAlpha AS BYTE (pStr AS STRING * 1) STATIC SHARED
+DECLARE FUNCTION IIF AS STRING * 96 (pEvalVar AS BYTE, pRetValTrue AS STRING * 96, pRetValFalse AS STRING * 96) STATIC SHARED
 
 'CALL pause(0.5,true)
 'end
+
+FUNCTION IIF AS STRING * 96 (pEvalVar AS BYTE, pRetValTrue AS STRING * 96, pRetValFalse AS STRING * 96) STATIC SHARED
+	IF pEvalVar = FALSE THEN RETURN pRetValFalse
+	RETURN pRetValTrue
+END FUNCTION
+
 
 FUNCTION isNumeric AS BYTE (pStr AS STRING * 1) STATIC SHARED
 	RETURN (ASC (pStr) > 47 AND ASC (pStr) < 58)
