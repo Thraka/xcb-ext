@@ -29,6 +29,21 @@ Include "menukeys.bas"
 Include "dmmain.bas"
 
 
+sub createfile(nf as string * 16) static
+	REM -- create files
+	print "create file "+ nf
+	OPEN 2,9,2, "@0:" + nf + ",s,w"
+	for cc as byte = 1 to 3
+	PRINT #2,"stuff" 
+	next
+	
+	CLOSE 2
+end sub
+
+for U AS BYTE = 10 TO 25
+	'call createfile("test-" + STR$(U))
+NEXT
+
 CALL StartUp()
 REM ----------------------------------------------------
 CALL MainMenu() : REM --> main code
@@ -122,6 +137,24 @@ ForceScroll:
 	REM --- format new disk -------------------------------------------------
 	IF keyPress$ = "k" THEN 
 		CALL popupFormatDisk(mCurrentDisk)
+		GOTO GetKeyMenu
+	END IF
+	
+	REM --- Rename file -------------------------------------------------
+	IF keyPress$ = "r" THEN 
+		'CALL popupRenameFile()
+		GOTO GetKeyMenu
+	END IF
+	
+	REM --- Delete file -------------------------------------------------
+	IF keyPress$ = "d" THEN 
+		CALL popupDeleteFile(GetArrIndexOfSelected(),mCurrentDisk)
+		GOTO GetKeyMenu
+	END IF
+	
+	REM --- multi tag-untag -------------------------------------------------
+	IF keyPress$ = "m" THEN 
+		'CALL popupMultiTag(GetArrIndexOfSelected(),mCurrentDisk)
 		GOTO GetKeyMenu
 	END IF
 	

@@ -1,8 +1,6 @@
 REM ******************************************************************************************************
 REM *    dir.bas   XC=BASIC Module V3.X 
 REM *
-REM *
-REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                           Apr 2022   
 REM ******************************************************************************************************
 CONST TRUE  = 255 : CONST FALSE = 0
@@ -25,16 +23,25 @@ SHARED CONST DIR_FILE_STATUS_OK = 0
 SHARED CONST DIR_END_ARRAY = 255
 
 CONST DIR_ARRAY_TOTAL = 120
+SHARED CONST SCREEN_PAGE_SIZE = 19
+
+SHARED CONST MAX_ARR_FILES = 121
 DIM SHARED gDirDirectory(121) AS Directory
+
 DIM SHARED gDirTotalFiles AS BYTE
+DIM SHARED gDirTotalPages AS BYTE
+DIM SHARED gDirCurrPage AS BYTE
 
 SUB dirClearDirArray() STATIC 
-	gDirDirectory(0).status = DIR_END_ARRAY
-	gDirTotalFiles = 0
+	
 	FOR index = 0 TO DIR_ARRAY_TOTAL
 		gDirDirectory(index).tagged = FALSE
 		gDirDirectory(index).index = index
+		gDirDirectory(index).status = DIR_FILE_STATUS_OK
 	NEXT
+	gDirDirectory(0).status = DIR_END_ARRAY
+	gDirTotalFiles = 0
+	
 END SUB
 
 SUB dirGetDir(device AS BYTE) STATIC SHARED
@@ -162,6 +169,7 @@ SUB dirGetDir(device AS BYTE) STATIC SHARED
 
 	REM -- end of the array
 	gDirDirectory(gDirTotalFiles).status = DIR_END_ARRAY
-	gDirTotalFiles = gDirTotalFiles - 1
+	gDirCurrPage = 1
+	
 	
 END SUB

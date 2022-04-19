@@ -16,11 +16,18 @@ DECLARE SUB scrnPRINTAT (xCol AS BYTE, xRow AS BYTE, xText AS STRING * 40) SHARE
 DECLARE SUB scrnPRINTAT (xCol AS BYTE, xRow AS BYTE, xText AS STRING * 40, xColor AS BYTE) SHARED STATIC  OVERLOAD
 
 DECLARE SUB scrnMsgBoxOk(xTextLine1 AS STRING * 30,xTextLine2 AS STRING * 30,xColorBox AS BYTE, xColorText AS BYTE) SHARED STATIC
+DECLARE SUB scrnBusyMsgBox(pStr AS STRING * 30) SHARED STATIC
 
 DIM junkVar AS BYTE
 
 '=========================================================================================================  
 DIM lastDebugMessageLen AS BYTE : lastDebugMessageLen = 1
+
+SUB scrnBusyMsgBox(pStr AS STRING * 30) SHARED STATIC
+	CALL boxDraw(3,10,32,4,gColors.box, TRUE)
+	TEXTAT 5,12, strCenterString(pStr ,30),gColors.txtNormal
+END SUB
+
 
 SUB scrnMsgBoxOk(xTextLine1 AS STRING * 30,xTextLine2 AS STRING * 30,xColorBox AS BYTE, xColorText AS BYTE) SHARED STATIC
 	CALL screenSave()
