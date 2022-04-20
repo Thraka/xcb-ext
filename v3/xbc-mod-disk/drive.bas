@@ -2,7 +2,6 @@ REM ****************************************************************************
 REM *    drive.bas   XC=BASIC Module V3.X 
 REM *
 REM *
-REM *
 REM *   (c)sadLogic and all of Humankind - Use as you see fit                           Jan-Feb 2022   
 REM *   Added dskFileDelete method.                                                                JakeBullet   Mar 2022   Between artillery shells! Ukraine!
 REM *   Added dskFileExists method.                                                                JakeBullet   Mar 2022   Watching people stand in line for bread...
@@ -13,6 +12,7 @@ REM *   Updated dskPrintFiles to include file size                              
 REM *   Added dskSafeKill method                                                                    JakeBullet  April-7-2022  City still occupied.
 REM *   Fixed dskFileExists method                                                                   JakeBullet  April-8-2022  City still occupied. 2 weeks of medication left
 REM *   Fixed dskIsDriveAttatched method                                                      JakeBullet  April-13-2022  Will this war ever end?
+REM *   Updated filetype method                                                                        JakeBullet  April-20-2022  No meds in the city
 REM ******************************************************************************************************
 
 DECLARE FUNCTION dskBlocksFree AS INT (driveNum AS BYTE) STATIC SHARED
@@ -40,6 +40,28 @@ CONST TRUE  = 255 : CONST FALSE = 0
 SHARED CONST DRIVE_1541 = 170 : SHARED CONST DRIVE_1541II = 76
 SHARED CONST DRIVE_1581 = 108 : SHARED CONST DRIVE_1571 = 173
 
+SHARED CONST FILE_TYPE_CBM = $85 : REM 1581 DIR / Partition
+'$A4 : REM ---      Relative @ replacement    Cannot occur
+SHARED CONST FILE_TYPE_DEL_LOCKED = $C0 : REM ---      Locked deleted            DEL<
+SHARED CONST FILE_TYPE_SEQ_LOCKED = $C1 : REM ---      Locked sequential         SEQ<
+SHARED CONST FILE_TYPE_PRG_LOCKED = $C2 : REM ---      Locked program            PRG<
+SHARED CONST FILE_TYPE_USR_LOCKED = $C3 : REM ---      Locked user               USR<
+SHARED CONST FILE_TYPE_REL_LOCKED = $C4 : REM ---      Locked relative           REL<
+SHARED CONST FILE_TYPE_SCRATCHED = $00 : REM ---      Scratched 
+SHARED CONST FILE_TYPE_DEL = $80 : REM ---      Deleted                   DEL
+SHARED CONST FILE_TYPE_SEQ = $81 : REM ---      Sequential            SEQ
+SHARED CONST FILE_TYPE_PRG = $82 : REM ---      Program                   PRG
+SHARED CONST FILE_TYPE_USR = $83 : REM ---      User                      USR
+SHARED CONST FILE_TYPE_REL = $84 : REM ---      Relative                  REL
+SHARED CONST FILE_TYPE_DEL_REPLACED = $A0 : REM ---      Deleted @ replacement     DEL
+SHARED CONST FILE_TYPE_SEQ_REPLACED = $A1 : REM ---      Sequential @ replacement  SEQ
+SHARED CONST FILE_TYPE_PRG_REPLACED = $A2 : REM ---      Program @ replacement     PRG
+SHARED CONST FILE_TYPE_USR_REPLACED = $A3 : REM ---      User @ replacement        USR
+'$04 : REM ---      Unclosed relative         Cannot occur
+SHARED CONST FILE_TYPE_SEQ_SPLAT = $01 : REM ---      Unclosed sequential       *SEQ
+SHARED CONST FILE_TYPE_PRG_SPLAT = $02 : REM ---      Unclosed program          *PRG
+SHARED CONST FILE_TYPE_USR_SPLAT = $03 : REM ---      Unclosed user             *USR
+
 DIM xTMP$  AS STRING * 1 
 DIM yTMP$  AS STRING * 1
 DIM counter AS BYTE FAST
@@ -47,6 +69,7 @@ DIM track$  AS STRING * 2
 DIM sector$ AS STRING * 2  
 DIM ecode$ AS STRING * 2  
 DIM msg$    AS STRING * 30
+
 
 
 REM ========== TESTING =======================
@@ -246,24 +269,28 @@ FUNCTION dskGetDiskName AS STRING * 16 (device AS BYTE) STATIC SHARED
 END FUNCTION
 
 
-FUNCTION GetFileType AS STRING * 3 (fileTypeByte AS BYTE) STATIC
-	REM -- There is a BUG at the moment - this needs to be 'STRING * 3'
-	
-	CONST FILE_TYPE_PRG = 130
-    CONST FILE_TYPE_SEQ = 129
-    CONST FILE_TYPE_USR = 131
-    CONST FILE_TYPE_REL = 132
-    CONST FILE_TYPE_CBM = 133 : REM 1581 DIR
-    CONST FILE_TYPE_DEL = 0
+FUNCTION GetFileType AS STRING * 4 (fileTypeByte AS BYTE) STATIC SHARED
 
-	IF fileTypeByte = FILE_TYPE_PRG  THEN RETURN "prg"
-	IF fileTypeByte = FILE_TYPE_SEQ THEN RETURN "seq"
-	IF fileTypeByte = FILE_TYPE_USR THEN RETURN "usr"
-	IF fileTypeByte = FILE_TYPE_CBM THEN RETURN "dir"
+	IF fileTypeByte = FILE_TYPE_PRG OR fileTypeByte = FILE_TYPE_PRG_REPLACED  THEN RETURN "prg"
+	IF fileTypeByte = FILE_TYPE_SEQ OR fileTypeByte = FILE_TYPE_SEQ_REPLACED THEN RETURN "seq"
+	IF fileTypeByte = FILE_TYPE_USR OR fileTypeByte = FILE_TYPE_USR_REPLACED THEN RETURN "usr"
+	IF fileTypeByte = FILE_TYPE_SCRATCHED OR fileTypeByte = FILE_TYPE_DEL OR fileTypeByte = FILE_TYPE_DEL_REPLACED THEN RETURN "del"
+	
+	IF fileTypeByte = FILE_TYPE_SEQ_SPLAT THEN RETURN "seq*"
+	IF fileTypeByte = FILE_TYPE_PRG_SPLAT  THEN RETURN "prg*"
+	IF fileTypeByte = FILE_TYPE_USR_SPLAT THEN RETURN "usr*"
+	
+	IF fileTypeByte = FILE_TYPE_CBM THEN RETURN "par" : REM - dir / partition
 	IF fileTypeByte = FILE_TYPE_REL  THEN RETURN "rel"
-	IF fileTypeByte = FILE_TYPE_DEL THEN RETURN "del"
+	 
+	IF fileTypeByte = FILE_TYPE_SEQ_LOCKED THEN RETURN "seq<"
+	IF fileTypeByte = FILE_TYPE_PRG_LOCKED  THEN RETURN "prg<"
+	IF fileTypeByte = FILE_TYPE_USR_LOCKED THEN RETURN "usr<"
+	IF fileTypeByte = FILE_TYPE_REL_LOCKED  THEN RETURN "rel<"
+	IF fileTypeByte = FILE_TYPE_DEL_LOCKED  THEN RETURN "del<"
 	
 	REM -- should never get here
+	'CALL debugOutVice( "splat file" + str$(fileTypeByte ) )
 	RETURN STR$(fileTypeByte)
 END FUNCTION
 
