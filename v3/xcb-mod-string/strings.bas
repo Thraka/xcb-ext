@@ -183,6 +183,30 @@ END FUNCTION
 FUNCTION strInstr AS BYTE(searchme AS STRING * 96, findme AS STRING * 96) STATIC OVERLOAD SHARED 
   RETURN strInstr(0,searchme,findme)
 END FUNCTION  
+
+'----------  needs to be checked. should be faster then the one above
+' Returns position (zero based) of needle in haystack, 255 if not found
+'FUNCTION INSTR AS BYTE (haystack AS WORD, needle AS WORD) SHARED STATIC
+'  hlen = PEEK(haystack) : nlen = PEEK(needle)
+'  haystack = haystack + 1 : needle = needle + 1
+'  IF nlen > hlen THEN RETURN 255
+'  FOR i AS BYTE = 0 TO hlen - nlen
+'    FOR j AS BYTE = 0 TO nlen - 1
+'      IF PEEK(haystack + i + j) <> PEEK(needle + j) THEN EXIT FOR
+'    NEXT j
+'    IF j = nlen THEN RETURN i
+'  NEXT i
+'  RETURN 255
+'END FUNCTION
+
+' Tests
+'DIM a$ AS STRING * 4
+'DIM b$ AS STRING * 2
+'DIM c$ AS STRING * 3
+'a$ = "abcd" : b$ = "bc" : c$ = "cd"
+'PRINT INSTR(@a$, @b$)
+'PRINT INSTR(@b$, @a$)
+'PRINT INSTR(@a$, @c$)
     
 
 
